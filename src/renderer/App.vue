@@ -6,7 +6,7 @@
 
 <script>
   export default {
-    name: 'electron-print'
+    name: 'mdm'
   }
 </script>
 

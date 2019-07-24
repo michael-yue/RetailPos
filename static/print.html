@@ -5,20 +5,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <script src="https://cdn.bootcss.com/vue/2.2.2/vue.min.js"></script>
-    <title>Document</title>
+    <title></title>
     <style>
+        
         @page {
             margin: 0;
+            size: 80mm 100mm;
         }
-        .a {
-            padding-left: 100px;
-        }
+        
+        #app{display: flex; flex-direction: column; }
+        .title{ font-size: 16px}
+        .lines{ display:flex; justify-content: space-between; padding: 10px 5px }
     </style>
 </head>
 
 <body>
     <div id='app'>
-        <div class="a" v-for="v in arr">{{v}}</div>
+        <!-- <span class='title'>客人点单</span> -->
+        <span style="border-bottom: 1px solid #000; padding-bottom:2px; font-size:24px">单号: {{ param.seq }}</span>
+
+        <!-- <div class="a" v-for="v in arr">{{v}}</div> -->
+        <div class="lines" v-for="v in param.orderline">
+            <div>{{ v.name }} </div>
+            <div>x {{ v.qty }}</div>
+        </div>
+        <div style="display: flex; justify-content: space-between;margin:5px 0; border-top: 1px solid #000;">
+            <span>{{ param.payway }}</span>
+            <span>
+                合计金额: {{ param.shouldpayamount }}
+            </span>
+        </div>
+        <div style=" padding-top:2px; text-align: right">
+            日期: {{param.orderdate}}
+        </div>
     </div>
 </body>
 <script>
@@ -29,13 +48,12 @@
     new Vue({
         el: "#app",
         data: {
-            arr: []
+            param: {}
         },
         mounted() {
-            ipcRenderer.on('ping', (e, arr) => { //接收响应
-                console.log(e)
-                console.log(arr)
-                this.arr = arr;
+            ipcRenderer.on('ping', (e, param) => { //接收响应
+                console.log('get ping')
+                this.param = param;
                 ipcRenderer.sendToHost('pong') //向webview所在页面的进程传达消息
             })
         },

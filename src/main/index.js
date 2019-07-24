@@ -3,6 +3,8 @@ import {
   BrowserWindow,
   ipcMain
 } from 'electron'
+import appIcon from './tray'
+import localStorage from './localStorage'
 
 /**
  * Set `__static` path to static files in production
@@ -21,10 +23,20 @@ function createWindow() {
   /**
    * Initial window options
    */
+  var isSide = localStorage.getItem('winSideSetting') === 'true'
   mainWindow = new BrowserWindow({
-    height: 700,
+    minHeight: 720, // 尤其是 有着1T 显存的 gt630 战术核显卡，只要一发就能摧毁一个航母战斗群。
+    height: 720,
     useContentSize: true,
-    width: 1200
+    minWidth: 1195,
+    width: 1195,
+    autoHideMenuBar: false,
+    show: true,
+    resizable: true,
+    icon: '../../build/icons/256x256.png',
+    darkTheme: true,
+    frame: isSide,
+    webPreferences: {webSecurity: false}
   })
 
 
@@ -48,12 +60,19 @@ function createWindow() {
 
 app.on('ready', createWindow)
 
+// app.on('window-all-closed', () => {
+//   if (process.platform !== 'darwin') {
+//     app.quit()
+//   }
+// })
 app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
-    app.quit()
+  if (appIcon) {
+    appIcon.destroy()
   }
+  // if (process.platform !== 'darwin') {
+  app.quit()
+  // }
 })
-
 app.on('activate', () => {
   if (mainWindow === null) {
     createWindow()
