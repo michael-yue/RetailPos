@@ -15,7 +15,7 @@
       </el-card>
     </div>
     <div :style="{height: myHeight}" style="padding:0 20px 10px 20px;">
-      <el-table :data="orders" height="100%">
+      <el-table v-loading="loading" :data="orders" height="100%">
         <el-table-column prop="transDate" label="日期" align="right" :class-name="h">
           <template slot-scope="props">
             <div>{{ props.row.transDate.time | formatDate }}</div>
@@ -66,6 +66,7 @@ export default {
       orders: [],
       dateRange: [],
       myHeight: 0,
+      loading: false,
       currentPage: 1,
       limit: 10,
       total: 0,
@@ -133,9 +134,9 @@ export default {
       var repdatefrom = parseTime(new Date(this.dateRange[0]), '{y}-{m}-{d}')
       var repdateto = parseTime(new Date(this.dateRange[1]), '{y}-{m}-{d}')
       listOrders(store.getters.branches, repdatefrom, repdateto, this.payway, this.currentPage, this.limit).then(response => {
-        console.log(response)
         that.total = response.total
         that.orders = response.data
+        this.loading = false
       }).catch(error => {
         console.log(error)
       })

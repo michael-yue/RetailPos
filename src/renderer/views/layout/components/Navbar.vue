@@ -12,18 +12,10 @@
             <i class="el-icon-caret-bottom"/>
           </div>
           <el-dropdown-menu slot="dropdown" class="user-dropdown">
-            <router-link class="inlineBlock" to="/">
-              <el-dropdown-item>
-                首页
-              </el-dropdown-item>
-            </router-link>
             <el-dropdown-item>
               <span style="display:block;" @click="UpdatePassword">修改密码</span>
             </el-dropdown-item>
             <el-dropdown-item divided>
-              <span style="display:block;" @click="logout">注销</span>
-            </el-dropdown-item>
-            <el-dropdown-item>
               <span style="display:block;" @click="exit">退出</span>
             </el-dropdown-item>
           </el-dropdown-menu>
@@ -65,7 +57,7 @@ import { updateNormalPassword } from '@/api/login.js'
 import store from '@/store'
 import Breadcrumb from '@/components/Breadcrumb'
 import Hamburger from '@/components/Hamburger'
-
+import { ipcRenderer } from 'electron'
 export default {
   components: {
     Breadcrumb,
@@ -127,7 +119,7 @@ export default {
       })
     },
     exit () {
-
+      ipcRenderer.send('window-all-closed')
     },
     toggle: function () {
       if (this.fullscreen) { // 退出全屏

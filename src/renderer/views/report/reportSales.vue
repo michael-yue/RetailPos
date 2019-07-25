@@ -4,6 +4,7 @@
       <el-menu ref="reportmenu" :default-active="activeIndex" class="el-menu" mode="horizontal" @select="handleSelect">
         <el-menu-item index="1">收入报表</el-menu-item>
         <el-menu-item index="2">产品销售报表</el-menu-item>
+        <el-menu-item index="3">就餐人员统计</el-menu-item>
       </el-menu>
       <div style="margin:10px">
         <span style="font-size:14px">选择日期：</span>
@@ -128,6 +129,8 @@ export default {
         this.$router.push('/report/reportIncome')
       } else if (key === '2') {
         this.$router.push('/report/reportSales')
+      } else if (key === '3') {
+        this.$router.push('/report/reportByMember')
       }
     }
   }

@@ -130,3 +130,13 @@ export function deleteMemberPrice (param) {
     }
   })
 }
+
+export function listAllMemberProductPrice (shopid) {
+  return request({
+    url: '/eldlyrest/listAllMemberProductPrice?t=' + Date.now(),
+    method: 'get',
+    params: {
+      shopid
+    }
+  })
+}

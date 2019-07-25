@@ -7,8 +7,9 @@
       </el-menu>
       <div style="display: flex; margin: 10px">
         <div style="flex: 0 0 auto; margin-left:5px; display: flex;">
-          <span style="font-size:14px; flex: 0 0 auto; margin:auto;padding:0 5px" >会员卡号</span>
+          <span style="font-size:14px; flex: 0 0 auto; margin:auto;padding:0 5px" >会员卡号:</span>
           <el-input size="small" v-model="membernumber" @keyup.enter.native="retrieveByNumber"/>
+          <el-button icon="el-icon-search" size="small" @click="searchMember"></el-button>
         </div>
         <div style="flex: 0 0 auto; margin-left:5px; display: flex;">
           <span style="font-size:14px; flex: 0 0 auto; margin:auto;padding:0 5px" >微信支付码</span>
@@ -17,13 +18,7 @@
       </div>
     </div>
     <div :style="{height: myHeight}" style="padding:0 20px 10px 20px;">
-      <el-tabs type="border-card" style="height:100%">
-        <el-tab-pane label="用户资料">
-          用户资料
-        </el-tab-pane>
-        <el-tab-pane label="充值记录">充值历史</el-tab-pane>
-        <el-tab-pane label="消费记录">消费历史</el-tab-pane>
-      </el-tabs>
+      
     </div>
   </div>
 </template>
@@ -43,6 +38,7 @@ export default {
       myHeight: '',
       loading: false,
       critStatus: 1,
+      dialogMemberSearchVisible: false,
       // edit dialog
       membernumber: '',
       authcode: '',
@@ -87,39 +83,16 @@ export default {
         console.log(error)
       })
     },
+    searchMember: function () {
+      this.dialogMemberSearchVisible = true
+    },
     tableheader ({ row, index }) {
       return 'background:#E4E7ED;'
     },
     // 分页处理
-    pagechange: function (currentPage) {
-      this.currentPage = currentPage
-      this.retrieve()
-    },
-    handleSizeChange: function (currentSize) {
-      this.limit = currentSize
-      this.retrieve()
-    },
-    UserTypeChangedEvent: function (event) {
-      // this.usertypeid = event.usertypeId
-      this.editForm.usertypeId = event.userTypeId
-    },
     closeDialog: function () {
       this.$refs['editForm'].resetFields()
       this.dialogFormVisible = false
-    },
-    edit: function (index, row) {
-      // this.editForm = Object.assign({}, row)
-      console.log(row)
-      this.editForm.id = row.id
-      this.editForm.openid = row.openid
-      this.editForm.realName = row.realname
-      if (row.userType !== null) {
-        this.editForm.usertypeId = row.userType.id
-      } else {
-        this.editForm.usertypeId = ''
-      }
-      console.log(this.editForm)
-      this.dialogFormVisible = true
     },
     handleSelect (key, keyPath) {
       if (key === '1') {
@@ -128,49 +101,6 @@ export default {
         this.$router.push('/member/memberQuery')
       }
     }
-    // deleterow: function (index, row) {
-    //   this.$confirm('确认删除吗？', '提示', {})
-    //     .then(() => {
-    //       const para = Object.assign({}, row)
-    //       deleteUser(para).then(res => {
-    //         if (res.code === 20000) {
-    //           this.$message({
-    //             message: '提交成功',
-    //             type: 'success'
-    //           })
-    //         }
-    //         this.dialogFormVisible = false
-    //         this.retrieve()
-    //       })
-    //     })
-    //     .catch(e => {
-    //       console.log(e)
-    //     })
-    // },
-    // updateData: function () {
-    //   this.$refs.editForm.validate(valid => {
-    //     if (valid) {
-    //       this.$confirm('确认提交吗？', '提示', {})
-    //         .then(() => {
-    //           const para = Object.assign({}, this.editForm)
-    //           approveUser(para).then(res => {
-    //             if (res.code === 20000) {
-    //               this.$message({
-    //                 message: '提交成功',
-    //                 type: 'success'
-    //               })
-    //             }
-    //             this.$refs['editForm'].resetFields()
-    //             this.dialogFormVisible = false
-    //             this.retrieve()
-    //           })
-    //         })
-    //         .catch(e => {
-    //           console.log(e)
-    //         })
-    //     }
-    //   })
-    // }
   }
 }
 </script>

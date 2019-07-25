@@ -6,7 +6,6 @@
           <div v-for="item in membertypes" :key="item.id">
             <el-radio-button :label="item.id">{{item.name}}</el-radio-button>
           </div>
-          <el-button icon="el-icon-search" @click="searchMember"></el-button>
         </el-radio-group>
       </div>
       <el-card class="orderedlist">
@@ -76,8 +75,9 @@
           <div style="flex: 0 0 30%; margin:auto">
             会员卡号
           </div>
-          <div style="flex: 1">
+          <div style="flex: 1; display:flex;">
             <el-input v-model = "inputCardnumber" :focus="true" autofocus @keyup.enter.native="getCardInfo"/>
+            <el-button icon="el-icon-search" size="small" @click="searchMember"></el-button>
           </div>
         </div>
         <div style="display:flex;margin:10px 0">
@@ -189,6 +189,33 @@
         <el-button type="primary" @click="recieveCard">确定支付</el-button>
       </span>
     </el-dialog>
+    <el-dialog
+      :visible.sync="dialogMemberSearchVisible"
+      :fullscreen="false"
+      :modal="true"
+      :show-close="false"
+      :close-on-click-modal	= "false"
+      title="查询会员卡"
+      top="5vh">
+      <div style="font-size:18px">
+        <div style="display: flex; flex-direction:column">
+          <div style="display:flex; align-items: center;margin:10px 10px; font-size:14px">
+            <span style="flex:0 0 auto; margin-right:5px;">会员卡号</span>
+            <el-input v-model="searchForm.cardnumber" label="会员卡号" size="small" />
+            <span style="flex:0 0 auto;margin: 0px 5px; font-size:14px">电话</span>
+            <el-input v-model="searchForm.mobile" label="电话" size="small" />
+            <div style="padding-left:5px; display: inherit">
+              <el-button plain size="small" type="primary" @click="query">查询</el-button>
+              <el-button plain size="small" type="primary" @click="createDialog">新建</el-button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <span slot="footer" class="dialog-footer">
+        <el-button size="medium" @click="dialogCardVisible = false">取 消</el-button>
+        <el-button type="primary" @click="recieveCard">确定支付</el-button>
+      </span>
+    </el-dialog>
     <div style="z-index: -1000; position:absolute;">
       <webview src="../../../static/print.html" nodeintegration></webview>
     </div>
@@ -240,7 +267,12 @@ export default {
       dialogMemberSearchVisible: false,
       casherror: '',
       wxerror: '',
-      cardpayerror: ''
+      cardpayerror: '',
+      searchForm: {
+        memberTypeId: 0,
+        cardnumber: '',
+        mobile: ''
+      }
     }
   },
   watch: {
@@ -312,15 +344,15 @@ export default {
     },
     memberTypeChanged: function (item) {
       this.selectMemberType = item
+      if (this.selectMemberType !== 1) {
+        this.dialogCardInputVisible = true
+      }
     },
     productTypeselected: function (item) {
       this.activeProductType = item
     },
     orderlineSelected: function (item) {
       this.activeOrderline = item
-    },
-    searchMember: function () {
-      this.dialogMemberSearchVisible = true
     },
     showCardDialog: function () {
       this.dialogCardInputVisible = true
@@ -433,6 +465,10 @@ export default {
       }
       this.totalamount = amount
       this.shouldpayamount = amount
+    },
+    // search
+    searchMember: function () {
+      this.dialogMemberSearchVisible = true
     },
     // Receieve
     showCash: function () {

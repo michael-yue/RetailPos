@@ -60,7 +60,6 @@ export const asyncRouterMap = [
   {
     path: '/order',
     component: require('@/views/layout/layout').default,
-    name: 'order',
     meta: { title: '订单', icon: 'example', roles: ['admin', 'pos'] },
     children: [
       {
@@ -88,6 +87,13 @@ export const asyncRouterMap = [
         name: 'reportSales',
         hidden: true,
         component: require('@/views/report/reportSales').default,
+        meta: { title: '报表', icon: 'table', roles: ['admin', 'pos'] }
+      },
+      {
+        path: '/report/reportByMember',
+        name: 'reportByMember',
+        hidden: true,
+        component: require('@/views/report/reportByMember').default,
         meta: { title: '报表', icon: 'table', roles: ['admin', 'pos'] }
       }
     ]

@@ -51,7 +51,7 @@ export default {
   methods: {
     // t
     reportPerson () {
-      this.$router.push('/report/reportByPerson')
+      this.$router.push('/report/reportByMember')
     },
     reportSales () {
       this.$router.push('/report/reportSales')

@@ -9,27 +9,31 @@
       </el-menu>
     </div>
     <div :style="{height: myHeight}" style="padding:0 20px 10px 20px;">
-      <div style="text-align:right;margin-bottom:10px">
+      <!-- <div style="text-align:right;margin-bottom:10px">
         <el-button type="primary" plain size="small" style="margin-left:20px" @click="add" >新建</el-button>
-      </div>
+      </div> -->
       <el-table
-        v-loading="loading"
-        ref="refTable"
+        id="datatable"
         :data="tableData"
-        :class="{'tablestyle': true}"
-        :header-cell-style="tableheader"
         size="small"
         height="100%">
+        <!-- <el-table-column v-if="!firstshow" fixed prop="itemname" label="项目" width="200" header-align="center" align="left" /> -->
         <el-table-column prop="productId" label="编码" width="100" header-align="center" align="right" />
         <el-table-column prop="name" label="名称" header-align="center" align="left" />
-        <el-table-column prop="price" label="单价" header-align="center" align="right" />
+        <el-table-column prop="type" label="类型" header-align="center" align="right" />
+        <el-table-column
+          v-for="item in tableConfig"
+          :label="item.label"
+          :prop="item.prop"
+          :key="item.id"
+          header-align="center"
+          align="right" />
         <el-table-column
           fixed="right"
           label="操作"
           width="100">
           <template slot-scope="scope">
             <el-button type="text" size="small" @click="edit(scope.$index, scope.row)">编辑</el-button>
-            <el-button type="text" size="small" @click="deleterow(scope.$index, scope.row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -43,15 +47,26 @@
       top="5vh">
       <div>
         <el-form ref="editForm" :model="editForm" :rules="editFormRules" label-width="80px">
-          <el-form-item label="代码" size="small" prop="typeId">
-            <el-input v-model="editForm.typeId" maxlength="10"/>
+          <el-form-item label="编码" size="small" prop="typeName">
+            <span>{{editForm.productId}}</span>
           </el-form-item>
           <el-form-item label="名称" size="small" prop="typeName">
-            <el-input v-model="editForm.typeName" maxlength="30"/>
+            <span>{{editForm.productName}}</span>
           </el-form-item>
-          <el-form-item label="收款金额" size="small" prop="typeName">
-            <el-input v-model="editForm.fee" maxlength="5"/>
-          </el-form-item>
+          <el-table
+            id="datatable"
+            :data="editFrom.priceList"
+            size="small"
+            height="100%">
+            <el-table-column prop="typeName" label="会员类型" header-align="center" align="left" />
+            <el-table-column prop="price" label="单价" header-align="center" align="left" >
+              <template slot-scope="scope">
+                <el-form-item label="单价" size="small" prop="price">
+                  <el-input v-model="scope.row.price" maxlength="5"/>
+                </el-form-item>
+              </template>
+            </el-table-column>
+          </el-table>
         </el-form>
       </div>
       <span slot="footer" class="dialog-footer">
@@ -66,7 +81,7 @@
 <script>
 import store from '@/store'
 // import { listAllMemberType } from '@/api/person.js'
-import { listAllMemberProduct, updateMemberPrice, createMemberPrice, deleteMemberPrice } from '@/api/product.js'
+import { listAllMemberProductPrice, updateMemberPrice, createMemberPrice, deleteMemberPrice } from '@/api/product.js'
 
 export default {
   name: 'MemberProductList',
@@ -77,36 +92,24 @@ export default {
       loading: false,
       // 表格变量
       tableData: [],
+      tableConfig: [],
       total: 0,
-      limit: 10,
-      currentPage: 1,
       // flag: false
-      selectedMemberType: 0,
       dialogFormVisible: false,
       dialogStatus: '',
       editForm: {
-        id: 0,
-        typeId: 0,
-        typeName: '',
-        userFee: 0
+        productId: 0,
+        productName: '',
+        priceList: []
       },
       editFormRules: {
-        typeId: [{ required: true, message: '请输入代码', trigger: 'blur' },
-          { min: 3, max: 10, message: '长度在 3 到 10 个字符', trigger: 'blur' }],
-        typeName: [{ required: true, message: '请输入名称', trigger: 'blur' },
-          { min: 3, max: 40, message: '长度在 4 到 40 个字符', trigger: 'blur' }],
         userFee: [{ required: true, message: '请输入名称', trigger: 'blur' },
           { min: 3, max: 20, message: '长度在 4 到 20 个字符', trigger: 'blur' }]
       }
     }
   },
   watch: {
-    selectedMemberType (val, oldval) {
-      this.retrieve()
-    },
-    limit (val, oldval) {
-      this.retrieve()
-    }
+    //
   },
   mounted () {
     const h = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight // 浏览器高度
@@ -124,8 +127,9 @@ export default {
   methods: {
     retrieve: function () {
       this.loading = true
-      listAllMemberProduct(store.getters.branches, this.selectedMemberType).then(response => {
-        this.tableData = response.data
+      listAllMemberProductPrice(store.getters.branches).then(response => {
+        this.tableConfig = response.data.tableHeader
+        this.tableData = response.data.tableData
         // this.total = response.totalnum
         this.loading = false
       }).catch(error => {
@@ -135,82 +139,19 @@ export default {
     tableheader ({ row, index }) {
       return 'background:#DCDFE6;'
     },
-    // 分页处理
-    pagechange: function (currentPage) {
-      this.currentPage = currentPage
-      this.retrieve()
-    },
-    handleSizeChange: function (currentSize) {
-      this.limit = currentSize
-    },
-    typeTypeSelectedEvent: function (event) {
-      this.typeTypeSelected = event.typeTypeId
-    },
-    addformtypeTypeSelectedEvent: function (event) {
-      this.editForm.typeId = event.typeTypeId
-    },
-    add: function () {
-      this.editForm = {
-        id: 0,
-        typeId: '',
-        typeName: '',
-        userFee: 0
-      }
-      this.dialogStatus = 'create'
-      this.dialogFormVisible = true
-    },
     edit: function (index, row) {
+      console.log(row)
+      var productId = row.productId
+      getMemberProductPrice(store.getters.branches, row.productId).then(res => {
+        // this.editForm
+      })
       this.editForm = {
         id: row.id,
         typeId: row.typeId,
         typeName: row.typeName,
-        userFee: row.userFee
       }
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
-    },
-    deleterow: function (index, row) {
-      this.$confirm('确认删除吗？', '提示', {})
-        .then(() => {
-          const para = Object.assign({}, row)
-          deleteMemberPrice(para).then(res => {
-            if (res.code === 20000) {
-              this.$message({
-                message: '提交成功',
-                type: 'success'
-              })
-            }
-            this.dialogFormVisible = false
-            this.retrieve()
-          })
-        })
-        .catch(e => {
-          console.log(e)
-        })
-    },
-    createData: function () {
-      this.$refs.editForm.validate(valid => {
-        if (valid) {
-          this.$confirm('确认提交吗？', '提示', {})
-            .then(() => {
-              const para = Object.assign({}, this.editForm)
-              createMemberPrice(para).then(res => {
-                if (res.code === 20000) {
-                  this.$message({
-                    message: '提交成功',
-                    type: 'success'
-                  })
-                }
-                this.$refs['editForm'].resetFields()
-                this.dialogFormVisible = false
-                this.retrieve()
-              })
-            })
-            .catch(e => {
-              console.log(e)
-            })
-        }
-      })
     },
     updateData: function () {
       this.$refs.editForm.validate(valid => {
