@@ -13,10 +13,10 @@
       <div style="display:flex; padding: 20px; flex-direction: column">
         <div style="margin: 10px 0"><el-checkbox v-model="systemParam.printBack">打印后厨单据</el-checkbox></div>
         <div style="margin: 10px 0"><el-checkbox v-model="systemParam.printFront">打印前台单据</el-checkbox></div>
-        <div style="display:flex; flex-direction:row; margin: 10px 0; font-size:14px">
+        <!-- <div style="display:flex; flex-direction:row; margin: 10px 0; font-size:14px">
           <span style="flex: 0 0 auto; margin: auto 10px; max-width:120px; min-width:80px">打印份数: </span>
           <el-input size="small" v-model="systemParam.frontPrintCount"/>
-        </div>
+        </div> -->
         <div style="display: flex; margin-bottom:10px; align-items:center; font-size:14px">
           <span style="max-width:120px; min-width:80px; margin: 0 10px">前台打印机:</span>
           <el-select v-model="systemParam.frontPrinter" size="small" placeholder="请选择">

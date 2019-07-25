@@ -20,12 +20,6 @@
       </div>
     </div>
     <div :style="{height: myHeight}" style="padding:0 20px 10px 20px;">
-      <!-- <div ref="tableheader" style="display:flex;flex-direction:column;padding:10px">
-        <div style="width:100%;text-align:center;font-size:16px;color:#606266">营业报表</div>
-        <div style="display:flex; font-size:14px;color:#606266">
-          <div style="flex:1 1 auto; text-align:right"> 报表日期：{{ repdate }}</div>
-        </div> 
-      </div> -->
       <el-table :data="orders" :header-cell-style="tableheader" size="small" height="100%">
         <el-table-column prop="productid" label="产品代码" align="left"/>
         <el-table-column prop="productname" label="名称" align="left" />

@@ -36,12 +36,23 @@ export function getIncomeGroupByDate (branchid, startdate, enddate) {
   })
 }
 
-export function getSalesByUserType (branchid, startdate, enddate) {
+// export function getSalesByUserType (branchid, startdate, enddate) {
+//   return request({
+//     url: '/eldlyrest/getSalesByUserType',
+//     method: 'get',
+//     params: {
+//       branchid,
+//       startdate,
+//       enddate
+//     }
+//   })
+// }
+export function getMemberIncomeByDate (shopid, startdate, enddate) {
   return request({
-    url: '/eldlyrest/getSalesByUserType',
+    url: '/eldlyrest/getMemberIncomeByDate',
     method: 'get',
     params: {
-      branchid,
+      shopid,
       startdate,
       enddate
     }

@@ -548,6 +548,7 @@ export default {
           cardnumber: this.member.cardNumber
         }
         this.print(arr)
+        this.print(arr)
         this.clearOrdered()
         this.dialogCashVisible = false
       })

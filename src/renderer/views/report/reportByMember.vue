@@ -21,14 +21,15 @@
       </div>
     </div>
     <div :style="{height: myHeight}" style="padding:0 20px 10px 20px;">
-      <el-table v-loading="loading" :data="orders" :header-cell-style="tableheader" size="small" height="100%">
+      <el-table v-loading="loading" :data="tableData" :header-cell-style="tableheader" size="small" height="100%">
         <el-table-column prop="transdate" label="时间" />
-        <el-table-column prop="count" label="人数" align="right"/>
-        <el-table-column prop="amount" label="金额" align="right"/>
-        <el-table-column prop="cashamount" label="现金" align="right"/>
-        <el-table-column prop="wxamount" label="微信" align="right"/>
-        <el-table-column prop="aliamount" label="支付宝" align="right"/>
-        <el-table-column prop="cardamount" label="会员卡" align="right"/>
+        <el-table-column
+          v-for="item in tableConfig"
+          :label="item.label"
+          :prop="item.prop"
+          :key="item.id"
+          header-align="center"
+          align="right" />
       </el-table>
     </div>
   </div>
@@ -36,7 +37,7 @@
 
 <script>
 import store from '@/store'
-import { getIncomeGroupByDate } from '@/api/report'
+import { getMemberIncomeByDate } from '@/api/report'
 import { parseTime, getYesterday, getThisPeriodStart, getThisPeriodEnd,
   getLastPeriodStart, getLastPeriodEnd, getThisMonthStart, getThisMonthEnd,
   getLastMonthStart, getLastMonthEnd } from '@/utils'
@@ -50,9 +51,10 @@ export default {
   },
   data () {
     return {
-      activeIndex: '4',
+      activeIndex: '3',
       selectedUserType: '',
-      orders: [],
+      tableConfig: [],
+      tableData: [],
       myHeight: '',
       total: 0,
       limit: 10,
@@ -116,26 +118,18 @@ export default {
       this.retrieveData()
     },
     retrieveData () {
-      this.orders = []
+      this.tableData = []
       this.loading = true
       var repdatefrom = parseTime(new Date(this.dateRange[0]), '{y}-{m}-{d}')
       var repdateto = parseTime(new Date(this.dateRange[1]), '{y}-{m}-{d}')
-      getIncomeGroupByDate(store.getters.branches, repdatefrom, repdateto).then(response => {
+      getMemberIncomeByDate(store.getters.branches, repdatefrom, repdateto).then(response => {
         console.log(response)
-        this.orders = response.data
+        this.tableConfig = response.data.tableConfig
+        this.tableData = response.data.tableData
         this.loading = false
       }).catch(error => {
         console.log(error)
       })
-    },
-    // 分页处理
-    pagechange: function (currentPage) {
-      this.currentPage = currentPage
-      this.retrieveData()
-    },
-    handleSizeChange: function (currentSize) {
-      this.limit = currentSize
-      this.retrieveData()
     },
     /*
     * 以下设置class

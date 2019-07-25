@@ -101,29 +101,9 @@ export function listAllMemberProduct (shopid, membertypeid) {
   })
 }
 
-export function createMemberPrice (param) {
-  return request({
-    url: '/eldlyrest/createMemberPrice?t=' + Date.now(),
-    method: 'post',
-    data: {
-      param
-    }
-  })
-}
-
 export function updateMemberPrice (param) {
   return request({
     url: '/eldlyrest/updateMemberPrice?t=' + Date.now(),
-    method: 'post',
-    data: {
-      param
-    }
-  })
-}
-
-export function deleteMemberPrice (param) {
-  return request({
-    url: '/eldlyrest/deleteMemberPrice?t=' + Date.now(),
     method: 'post',
     data: {
       param
@@ -137,6 +117,17 @@ export function listAllMemberProductPrice (shopid) {
     method: 'get',
     params: {
       shopid
+    }
+  })
+}
+
+export function getMemberProductPrice (shopid, productId) {
+  return request({
+    url: '/eldlyrest/getMemberProductPrice?t=' + Date.now(),
+    method: 'get',
+    params: {
+      shopid,
+      productId
     }
   })
 }
