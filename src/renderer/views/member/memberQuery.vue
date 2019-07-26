@@ -9,7 +9,6 @@
         <div style="flex: 0 0 auto; margin-left:5px; display: flex;">
           <span style="font-size:14px; flex: 0 0 auto; margin:auto;padding:0 5px" >会员卡号:</span>
           <el-input size="small" v-model="membernumber" @keyup.enter.native="retrieveByNumber"/>
-          <!-- <el-button icon="el-icon-search" size="small" @click="searchMember"></el-button> -->
         </div>
         <div style="flex: 0 0 auto; margin-left:5px; display: flex;">
           <span style="font-size:14px; flex: 0 0 auto; margin:auto;padding:0 5px" >微信支付码</span>
@@ -17,8 +16,8 @@
         </div>
       </div>
     </div>
-    <div :style="{height: myHeight}" style="padding:0 20px 10px 20px;">
-      <div v-show="contentVisible" style="font-size:14px">
+    <div :style="{height: myHeight}" style="padding:0 20px 10px 20px; display:flex; flex-direction:column;">
+      <div v-show="contentVisible" style="font-size:14px; coloe: #606266; flex: 0 0 auto; padding: 0 20px">
         <div style="display:flex;margin:10px 0px">
           <div>卡号：{{memberInfo.member.cardnumber}}</div>
         </div>
@@ -40,20 +39,36 @@
           </div>
         </el-row>
       </div>
-      <div v-show="contentVisible" style="font-size:14px">
-        <el-table :data="memberInfo.transList" size="small" height="100%">
-          <el-table-column prop="transDate" label="产品代码" align="left"/>
-          <el-table-column prop="productname" label="名称" align="left" />
-          <el-table-column prop="qty" label="数量" align="right"/>
-        </el-table>
-      </div>
+      <el-table :data="memberInfo.transList" size="small" height="300px" v-show="contentVisible" style="font-size:13px;flex: 1 0 auto">
+        <el-table-column prop="transDate" label="日期" align="right">
+          <template slot-scope="props">
+            <div>{{ props.row.transDate.time | formatDate }}</div>
+          </template>
+        </el-table-column>
+        <el-table-column prop="lines" label="产品" align="left">
+        <template slot-scope="scope">
+          <div v-for="line in scope.row.lines" :key="line.prodid">
+            {{line.prodname}} x {{line.qty}}
+          </div>
+        </template>
+      </el-table-column>
+        <el-table-column prop="shouldPayAmount" label="金额" align="left" />
+        <el-table-column prop="payWay" label="支付方式" align="right">
+          <template slot-scope="scope">
+            <div v-if="scope.row.payWay === '2'">微信支付</div>
+            <div v-else-if="scope.row.payWay == '1'">现金支付</div>
+            <div v-else-if="scope.row.payWay == '3'">会员卡支付</div>
+          </template>
+        </el-table-column>
+      </el-table>
     </div>
   </div>
 </template>
 
 <script>
+import store from '@/store'
 import { queryMemberInfoByCardnumber, queryMemberInfoByAuthcode } from '@/api/person.js'
-
+import { parseTime } from '@/utils'
 export default {
   name: 'PersonArpproveList',
   data () {
@@ -73,6 +88,12 @@ export default {
       }
     }
   },
+  filters: {
+    formatDate (time) {
+      const date = new Date(time)
+      return parseTime(date, '{y}-{m}-{d} {h}:{i}:{s}')
+    }
+  },
   watch: {
     critStatus (oldval, newval) {
       this.retrieve()
@@ -81,11 +102,11 @@ export default {
   mounted () {
     const h = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight // 浏览器高度
     const critheaderheight = this.$refs.critheader.offsetHeight
-    this.myHeight = (h - critheaderheight - 60) + 'px'
+    this.myHeight = (h - critheaderheight - 100) + 'px'
     var that = this
     window.onresize = function windowResize () {
       const h = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight // 浏览器高度
-      that.myHeight = (h - critheaderheight - 60) + 'px'
+      that.myHeight = (h - critheaderheight - 100) + 'px'
     }
   },
   created: function () {
@@ -98,20 +119,21 @@ export default {
         this.contentVisible = true
         this.memberInfo = res.data
         this.loading = false
-        console.log(this.memberInfo)
       }).catch(error => {
         console.log(error)
       })
+      this.authcode = ''
+      this.membernumber = ''
     },
     retrieveByAuthcode: function () {
       this.loading = true
-      queryMemberInfoByAuthcode(this.authcode).then(res => {
+      queryMemberInfoByAuthcode(store.getters.branches, this.authcode).then(res => {
         this.contentVisible = true
         this.memberInfo = res.data
         this.loading = false
-        console.log(this.memberInfo)
       }).catch(error => {
         console.log(error)
+        this.authcode = ''
       })
       this.authcode = ''
       this.membernumber = ''

@@ -4,13 +4,15 @@
       <h3 class="title">天天灶料</h3>
       <el-form-item prop="username">
         <span class="svg-container">
-          <svg-icon icon-class="user" />
+          <!-- <svg-icon icon-class="user" /> -->
+          <i class="el-icon-user" />
         </span>
         <el-input v-model="loginForm.username" name="username" type="text" auto-complete="on" placeholder="登录名" />
       </el-form-item>
       <el-form-item prop="password">
         <span class="svg-container">
-          <svg-icon icon-class="password" />
+          <!-- <svg-icon icon-class="password" /> -->
+          <i class="el-icon-key" />
         </span>
         <el-input
           :type="pwdType"

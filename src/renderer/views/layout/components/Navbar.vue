@@ -119,7 +119,7 @@ export default {
       })
     },
     exit () {
-      ipcRenderer.send('window-all-closed')
+      ipcRenderer.send('exit')
     },
     toggle: function () {
       if (this.fullscreen) { // 退出全屏

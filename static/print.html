@@ -6,8 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <script src="https://cdn.bootcss.com/vue/2.2.2/vue.min.js"></script>
     <title></title>
-    <style>
-        
+    <style>        
         @page {
             margin: 0;
             size: 80mm 100mm;
@@ -29,7 +28,7 @@
             <div>{{ v.name }} </div>
             <div>x {{ v.qty }}</div>
         </div>
-        <div style="display: flex; justify-content: space-between;margin:5px 0; border-top: 1px solid #000;">
+        <div style="display: flex; justify-content: space-between;margin:5px 0; border-top: 1px solid #000;padding-top:5px">
             <span>{{ param.payway }}</span>
             <span>
                 合计金额: {{ param.shouldpayamount }}
@@ -42,9 +41,7 @@
 </body>
 <script>
     //引入ipcRenderer对象
-    const {
-        ipcRenderer
-    } = require('electron')
+    const { ipcRenderer } = require('electron')
     new Vue({
         el: "#app",
         data: {
@@ -52,7 +49,7 @@
         },
         mounted() {
             ipcRenderer.on('ping', (e, param) => { //接收响应
-                console.log('get ping')
+                // console.log('get ping')
                 this.param = param;
                 ipcRenderer.sendToHost('pong') //向webview所在页面的进程传达消息
             })

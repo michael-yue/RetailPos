@@ -95,7 +95,7 @@
       </div>
       <span slot="footer" class="dialog-footer">
         <el-button size="medium" @click="closeDialog">取 消</el-button>
-        <el-button v-if="formstatus =='create'" type="primary" @click="createMember">新建</el-button>
+        <el-button v-if="formstatus =='create'" v-loading="loadingCreateMember" type="primary" @click="createMember">新建</el-button>
         <el-button v-else type="primary" @click="updateMember">修改保存</el-button>
       </span>
     </el-dialog>
@@ -131,6 +131,7 @@
 </template>
 
 <script>
+import store from '@/store'
 import { listAllUser, createCard, updateCard } from '@/api/person.js'
 import MemberTypeSelector from '@/components/widgets/MemberTypeSelector'
 
@@ -178,7 +179,8 @@ export default {
         cardnumber: '',
         payway: 1,
         rechargeamount: ''
-      }
+      },
+      loadingCreateMember: false
     }
   },
   mounted () {
@@ -269,7 +271,9 @@ export default {
               console.log('this.edifrom')
               console.log(this.editForm)
               const para = Object.assign({}, this.editForm)
+              para.shopid = store.getters.branches
               console.log(para)
+              this.loadingCreateMember = true
               createCard(para).then(res => {
                 if (res.code === 20000) {
                   this.$message({
@@ -278,7 +282,7 @@ export default {
                   })
                 }
                 this.$refs['editForm'].resetFields()
-                this.dialogFormVisible = false
+                this.loadingCreateMember = false
                 this.retrieve()
               })
             })
@@ -295,6 +299,7 @@ export default {
             .then(() => {
               const para = Object.assign({}, this.editForm)
               console.log(para)
+              para.shopid = store.getters.branches
               updateCard(para).then(res => {
                 if (res.code === 20000) {
                   this.$message({

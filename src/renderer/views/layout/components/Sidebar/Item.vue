@@ -1,6 +1,6 @@
 <template>
   <div style="display:flex; flex-direction: column">
-    <svg-icon :icon-class="icon" />
+    <!-- <svg-icon :icon-class="icon" /> -->
     <span slot="title">{{title}}</span>
   </div>
 </template>

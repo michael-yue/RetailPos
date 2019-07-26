@@ -50,13 +50,17 @@ function createWindow() {
     mainWindow.webContents.send('getPrinterList', list);
   });
 
-
   mainWindow.loadURL(winURL)
 
   mainWindow.on('closed', () => {
     mainWindow = null
   })
 }
+
+ipcMain.on('exit', (e) => {
+  // app.relaunch()
+  app.exit(0)
+})
 
 app.on('ready', createWindow)
 
@@ -66,6 +70,7 @@ app.on('ready', createWindow)
 //   }
 // })
 app.on('window-all-closed', () => {
+  console.log('message window-all-closed')
   if (appIcon) {
     appIcon.destroy()
   }

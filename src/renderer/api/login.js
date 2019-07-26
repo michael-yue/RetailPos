@@ -25,3 +25,15 @@ export function logout () {
     data: { }
   })
 }
+
+export function updateNormalPassword (userid, password, newpassword) {
+  return request({
+    url: '/eldlyrest/updateNormalPassword',
+    method: 'post',
+    data: { 
+      userid,
+      password,
+      newpassword      
+    }
+  })
+}

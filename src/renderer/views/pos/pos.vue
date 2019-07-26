@@ -3,6 +3,7 @@
     <div class="leftarea">
       <div style="display:flex; justify-content:space-between">
         <el-radio-group v-model="selectedMemberType" @change="memberTypeChanged" style="display:flex">
+          <el-radio-button label="0">非会员</el-radio-button>
           <div v-for="item in membertypes" :key="item.id">
             <el-radio-button :label="item.id">{{item.name}}</el-radio-button>
           </div>
@@ -93,7 +94,7 @@
         </div>
       </div>
       <span slot="footer" class="dialog-footer">
-        <el-button size="medium" @click="dialogCardInputVisible = false">取 消</el-button>
+        <el-button size="medium" @click="cancelCardNumber">取 消</el-button>
         <el-button type="primary" @click="confirmCardNumber">确定</el-button>
       </span>
     </el-dialog>
@@ -140,13 +141,13 @@
           <div style="margin: auto; min-width: 60px">扫码: </div>
           <el-input v-model = "qrcode" :focus="true" autofocus @keyup.enter.native="recieveWx"/>
         </div>
-        <div style="color:red">
+        <div style="color:red; padding-top:20px">
           {{ wxerror}}
         </div>
       </div>
       <span slot="footer" class="dialog-footer">
         <el-button size="medium" @click="closeWxDialog">取 消</el-button>
-        <el-button type="primary" @click="recieveWx">确定</el-button>
+        <el-button v-loading="loadingWxPay" type="primary" @click="recieveWx">确定</el-button>
       </span>
     </el-dialog>
     <el-dialog
@@ -205,8 +206,8 @@
             <span style="flex:0 0 auto;margin: 0px 5px; font-size:14px">电话</span>
             <el-input v-model="searchForm.mobile" label="电话" size="small" />
             <div style="padding-left:5px; display: inherit">
-              <el-button plain size="small" type="primary" @click="query">查询</el-button>
-              <el-button plain size="small" type="primary" @click="createDialog">新建</el-button>
+              <el-button plain size="small" type="primary">查询</el-button>
+              <el-button plain size="small" type="primary">新建</el-button>
             </div>
           </div>
         </div>
@@ -217,7 +218,8 @@
       </span>
     </el-dialog>
     <div style="z-index: -1000; position:absolute;">
-      <webview src="../../../static/print.html" nodeintegration></webview>
+      <webview ref="frontView" src="../../../static/print.html" nodeintegration></webview>
+      <webview ref="backView" src="../../../static/print.html" nodeintegration></webview>
     </div>
   </div>
 </template>
@@ -272,7 +274,8 @@ export default {
         memberTypeId: 0,
         cardnumber: '',
         mobile: ''
-      }
+      },
+      loadingWxPay: false
     }
   },
   watch: {
@@ -285,10 +288,6 @@ export default {
         this.changeamount = t
       }
     },
-    // customerTypeId (newvar, oldvar) {
-    //   this.listAllAvaliableProduct()
-    //   // this.recalcuateOrder()
-    // },
     selectedMemberType (newvar, oldvar) {
       this.listAllAvaliableProduct()
       // this.recalcuateOrder()
@@ -297,34 +296,35 @@ export default {
   mounted () {
     const h = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight // 浏览器高度
     const critheaderheight = 0 // this.$refs.critheader.offsetHeight
-    // const statHeight = this.$refs.critheader.offsetHeight
     this.myHeight = (h - critheaderheight - 50) + 'px'
     var that = this
     window.onresize = function windowResize () {
       const h = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight // 浏览器高度
       that.myHeight = (h - critheaderheight - 50) + 'px'
     }
-    this.getPrinterList()
-    this.setPrinter()
-    this.getMemberTypes()
-    this.listAllAvaliableProductType()
+    // this.getPrinterList()
+    this.getSystemParam()
   },
   created () {
-    this.getSystemParam()
+    this.getMemberTypes()
+    this.listAllAvaliableProductType()
   },
   methods: {
     getSystemParam: function () {
       getSystemParam(store.getters.branches).then(res => {
         this.sysParam = res.data
+        if (this.sysParam.printFront) {
+          this.setPrinter(this.$refs.frontView, this.sysParam.frontPrinter)
+        }
+        if (this.sysParam.printBack) {
+          this.setPrinter(this.$refs.backView, this.sysParam.backPrinter)
+        }
       })
     },
     getMemberTypes: function () {
       listAllMemberType().then(res => {
         if (res.code === 20000) {
           this.membertypes = res.data
-          if (res.data.length > 0) {
-            this.selectedMemberType = res.data[0].id
-          }
         }
       })
     },
@@ -344,7 +344,7 @@ export default {
     },
     memberTypeChanged: function (item) {
       this.selectMemberType = item
-      if (this.selectMemberType !== 1) {
+      if (this.selectMemberType !== '0') {
         this.dialogCardInputVisible = true
       }
     },
@@ -383,6 +383,12 @@ export default {
       this.cardnumber = this.inputCardnumber
       this.customerName = this.inputCustomerName
       this.dialogCardInputVisible = false
+      this.inputCardnumber = ''
+      this.inputCustomerName = ''
+    },
+    cancelCardNumber: function () {
+      dialogCardInputVisible = false
+      this.selectedMemberType = 0
     },
     // function orderline
     clearOrdered: function () {
@@ -400,7 +406,7 @@ export default {
       this.carderror = ''
       this.qrcode = ''
       this.member = {}
-      this.selectedMemberType = this.membertypes[0].id
+      this.selectedMemberType = 0
     },
     addQty: function () {
       var arr = Object.keys(this.activeOrderline)
@@ -533,9 +539,9 @@ export default {
         qrcode: '',
         cardnumber: this.member.cardnumber
       }
+      var that = this
       saveOrder(param).then(res => {
         var orderdate = parseTime(new Date(), '{y}-{m}-{d} {h}:{i}')
-        console.log('ret cash')
         var arr = {
           seq: res.data.seq,
           orderdate: orderdate,
@@ -547,7 +553,6 @@ export default {
           qrcode: this.qrcode,
           cardnumber: this.member.cardNumber
         }
-        this.print(arr)
         this.print(arr)
         this.clearOrdered()
         this.dialogCashVisible = false
@@ -568,10 +573,12 @@ export default {
         qrcode: this.qrcode,
         cardnumber: this.member.cardNumber
       }
+      this.loadingWxPay = true
       saveOrder(param).then(res => {
         if (res.code === 20000) {
           if (res.appcode === 201) {
-            this.wxerror = '支付错误'
+            this.wxerror = res.data
+            this.loadingWxPay = false
             return
           }
         }
@@ -587,17 +594,15 @@ export default {
           qrcode: this.qrcode,
           cardnumber: this.member.cardNumber
         }
-        // console.log(this.sysParam.frontPrintCount)
-        // for (var i = 0; i < this.sysParam.frontPrintCount; i++) {
-        //   this.print(arr)
-        // }
         this.print(arr)
         this.clearOrdered()
         this.wxerror = ''
+        this.loadingWxPay = false
         this.dialogWxVisible = false
       }).catch(error => {
         console.log(error)
         this.wxerror = '支付错误'
+        this.qrcode = ''
       })
     },
     recieveAli: function () {
@@ -644,71 +649,45 @@ export default {
         this.clearOrdered()
       })
     },
-    // print back, seprate product
-    // setPrinter () {
-    //   const webview = document.querySelector('webview')
-    //   webview.addEventListener('dom-ready', () => {
-    //     console.log('dom-ready')
-    //   })
-    //   webview.addEventListener('ipc-message', event => {
-    //     if (event.channel === 'pong') {
-    //       webview.print(
-    //         {
-    //           silent: true,
-    //           printBackground: true,
-    //           deviceName: this.sysParam.frontPrinter
-    //         },
-    //         (data) => {
-    //           console.log(data)
-    //           console.log('webview success', data)
-    //         }
-    //       )
-    //     }
-    //   })
-    // },
-    setPrinter () {
-      console.log(111)
-      const webview = document.querySelector('webview')
-      console.log(webview)
+    setPrinter (webview, printer) {
+      // const webview = document.querySelector('webview')
       webview.addEventListener('dom-ready', () => {
         console.log('dom-ready')
-        // dom-ready---webview加载完成
-        webview.openDevTools() // 这个方法可以打开print.html的控制台
+        // webview.openDevTools() // 这个方法可以打开print.html的控制台
       })
       webview.addEventListener('ipc-message', event => {
-        console.log(event.channel) // Prints "pong" 在此监听事件中接收webview嵌套页面所响应的事件
         if (event.channel === 'pong') {
-          console.log('通信成功')
           webview.print(
             {
               // 是否是静默打印,true为静默打印，false会弹出打印设置框
               silent: true,
               printBackground: false,
-              // 打印机的名称，this.print1为在getPrinterList()方法中获取到的打印机名字。
-              // 注意在demo中这是我打印机的设备，在使用本demo时，先去getPrinterList()中找到你使用的打印机
-              deviceName: 'Microsoft XPS Document Writer' // this.print1
+              deviceName: printer  // 'Microsoft XPS Document Writer' 
             },
             data => {
-              // 这个回调是打印后的回调事件，data为true就是打印成功，为false就打印失败
               console.log('webview success', data)
             }
           )
         }
       })
     },
-    getPrinterList () {
-      ipcRenderer.send('getPrinterList')
-      ipcRenderer.once('getPrinterList', (event, data) => {
-        console.log(data)
-      })
-    },
-    print (arr) {
-      const webview = document.querySelector('webview')
-      webview.send('ping', arr) // 向webview嵌套的页面响应事件
-    },
-    printCustomerBill (arr) {
-      const webview = document.querySelector('webview')
-      webview.send('ping', arr) // 向webview嵌套的页面响应事件
+    // getPrinterList () {
+    //   ipcRenderer.send('getPrinterList')
+    //   ipcRenderer.once('getPrinterList', (event, data) => {
+    //     console.log(data)
+    //   })
+    // },
+    print (webview,  arr) {
+      // const webview = this.$refs.frontView
+      // webview.send('ping', arr) // 向webview嵌套的页面响应事件
+      if (this.sysParam.printFront) {
+        const webview = this.$refs.frontPrinter
+        webview.send('ping', arr) // 向webview嵌套的页面响应事件
+      }
+      if (this.sysParam.printBack) {
+        const webview = this.$refs.backPrinter
+        webview.send('ping', arr) // 向webview嵌套的页面响应事件
+      }
     }
   }
 }

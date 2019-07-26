@@ -120,11 +120,13 @@ export function queryMemberByCardnumber (memberNumber) {
     }
   })
 }
-export function queryMemberInfoByAuthcode (authcode) {
+
+export function queryMemberInfoByAuthcode (shopid, authcode) {
   return request({
     url: '/eldlyrest/queryMemberInfoByAuthcode?t=' + Date.now(),
     method: 'get',
     params: {
+      shopid,
       authcode
     }
   })

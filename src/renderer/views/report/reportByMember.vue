@@ -22,14 +22,22 @@
     </div>
     <div :style="{height: myHeight}" style="padding:0 20px 10px 20px;">
       <el-table v-loading="loading" :data="tableData" :header-cell-style="tableheader" size="small" height="100%">
-        <el-table-column prop="transdate" label="时间" />
+        <el-table-column prop="transDate" label="时间" />
         <el-table-column
           v-for="item in tableConfig"
           :label="item.label"
           :prop="item.prop"
           :key="item.id"
           header-align="center"
-          align="right" />
+          align="right" >
+          <el-table-column
+            v-for="item1 in item.children"
+            :label="item1.label"
+            :prop="item1.prop"
+            :key="item1.id"
+            header-align="center"
+            align="right" />
+        </el-table-column>
       </el-table>
     </div>
   </div>
@@ -124,7 +132,7 @@ export default {
       var repdateto = parseTime(new Date(this.dateRange[1]), '{y}-{m}-{d}')
       getMemberIncomeByDate(store.getters.branches, repdatefrom, repdateto).then(response => {
         console.log(response)
-        this.tableConfig = response.data.tableConfig
+        this.tableConfig = response.data.tableHeader
         this.tableData = response.data.tableData
         this.loading = false
       }).catch(error => {
