@@ -542,7 +542,7 @@ export default {
       var that = this
       saveOrder(param).then(res => {
         var orderdate = parseTime(new Date(), '{y}-{m}-{d} {h}:{i}')
-        var arr = {
+        var param = {
           seq: res.data.seq,
           orderdate: orderdate,
           orderline: this.orderedlist,
@@ -553,7 +553,7 @@ export default {
           qrcode: this.qrcode,
           cardnumber: this.member.cardNumber
         }
-        this.print(arr)
+        this.print(param)
         this.clearOrdered()
         this.dialogCashVisible = false
       })
@@ -583,7 +583,7 @@ export default {
           }
         }
         var orderdate = parseTime(new Date(), '{y}-{m}-{d} {h}:{i}')
-        var arr = {
+        var param = {
           seq: res.data.seq,
           orderdate: orderdate,
           orderline: this.orderedlist,
@@ -594,7 +594,7 @@ export default {
           qrcode: this.qrcode,
           cardnumber: this.member.cardNumber
         }
-        this.print(arr)
+        this.print(param)
         this.clearOrdered()
         this.wxerror = ''
         this.loadingWxPay = false
@@ -677,15 +677,15 @@ export default {
     //     console.log(data)
     //   })
     // },
-    print (webview,  arr) {
+    print (arr) {
       // const webview = this.$refs.frontView
       // webview.send('ping', arr) // 向webview嵌套的页面响应事件
       if (this.sysParam.printFront) {
-        const webview = this.$refs.frontPrinter
+        const webview = this.$refs.frontView
         webview.send('ping', arr) // 向webview嵌套的页面响应事件
       }
       if (this.sysParam.printBack) {
-        const webview = this.$refs.backPrinter
+        const webview = this.$refs.backView
         webview.send('ping', arr) // 向webview嵌套的页面响应事件
       }
     }
