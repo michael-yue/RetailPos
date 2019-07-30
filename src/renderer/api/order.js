@@ -1,11 +1,18 @@
 import request from '@/utils/request'
 
-export function saveOrder (param) {
+export function saveOrder (shopid, orderline, shouldpayamount, payedamount, changeamount, payway, qrcode, cardnumber) {
   return request({
     url: '/eldlyrest/saveOrder?t=' + Date.now(),
-    method: 'post',
-    data: {
-      param
+    method: 'get',
+    params: {
+      shopid,
+      orderline,
+      shouldpayamount,
+      payedamount,
+      changeamount,
+      payway,
+      qrcode,
+      cardnumber
     }
   })
 }

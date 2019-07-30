@@ -59,7 +59,7 @@
           <li @click="showCash">现金收款</li>
           <li @click="showWx">微信收款</li>
           <li class="disable">支付宝</li>
-          <li @click="showCard">会员卡</li>
+          <li class="disable">会员卡</li>
           <!-- <li @>混合支付</li> -->
         </ul>
       </el-card>
@@ -78,7 +78,7 @@
           </div>
           <div style="flex: 1; display:flex;">
             <el-input v-model = "inputCardnumber" :focus="true" autofocus @keyup.enter.native="getCardInfo"/>
-            <el-button icon="el-icon-search" size="small" @click="searchMember"></el-button>
+            <!-- <el-button icon="el-icon-search" size="small" @click="searchMember"></el-button> -->
           </div>
         </div>
         <div style="display:flex;margin:10px 0">
@@ -380,14 +380,23 @@ export default {
       })
     },
     confirmCardNumber: function () {
-      this.cardnumber = this.inputCardnumber
-      this.customerName = this.inputCustomerName
-      this.dialogCardInputVisible = false
-      this.inputCardnumber = ''
-      this.inputCustomerName = ''
+      if (this.inputCardnumber === '') {
+        this.selectedMemberType = 0
+        this.dialogCardInputVisible = false
+      } else {
+        this.getCardInfo()
+        // this.cardnumber = this.inputCardnumber
+        // this.customerName = this.inputCustomerName
+        this.dialogCardInputVisible = false
+        this.inputCardnumber = ''
+        this.inputCustomerName = ''
+      }
     },
     cancelCardNumber: function () {
-      dialogCardInputVisible = false
+      this.inputCardnumber = ''
+      this.inputCustomerName = ''
+      this.carderror = ''
+      this.dialogCardInputVisible = false
       this.selectedMemberType = 0
     },
     // function orderline
@@ -495,17 +504,17 @@ export default {
       }
       this.dialogAliVisible = true
     },
-    showCard: function () {
-      console.log('this.member')
-      console.log(this.member)
-      if (this.shouldpayamount === 0) {
-        return
-      }
-      if (this.member === null) {
-        console.log('null')
-      }
-      this.dialogCardVisible = true
-    },
+    // showCard: function () {
+    //   console.log('this.member')
+    //   console.log(this.member)
+    //   if (this.shouldpayamount === 0) {
+    //     return
+    //   }
+    //   if (this.member === null) {
+    //     console.log('null')
+    //   }
+    //   this.dialogCardVisible = true
+    // },
     recalcuateOrder: function () {
       var amount = 0
       if (this.orderedlist.length > 0) {
@@ -529,6 +538,7 @@ export default {
       if (this.payedamount < this.shouldpayamount) {
         return
       }
+      console.log(this.member)
       var param = {
         shopid: store.getters.branches,
         orderline: this.orderedlist,
@@ -540,7 +550,8 @@ export default {
         cardnumber: this.member.cardnumber
       }
       var that = this
-      saveOrder(param).then(res => {
+      saveOrder(store.getters.branches, JSON.stringify(this.orderedlist), this.shouldpayamount, 
+        this.payedamount, this.changeamount, 1, '', this.member.cardnumber).then(res => {
         var orderdate = parseTime(new Date(), '{y}-{m}-{d} {h}:{i}')
         var param = {
           seq: res.data.seq,
@@ -574,7 +585,8 @@ export default {
         cardnumber: this.member.cardNumber
       }
       this.loadingWxPay = true
-      saveOrder(param).then(res => {
+      saveOrder(store.getters.branches, JSON.stringify(this.orderedlist), this.shouldpayamount, 
+        this.payedamount, this.changeamount, 2, this.qrcode, this.member.cardnumber).then(res => {
         if (res.code === 20000) {
           if (res.appcode === 201) {
             this.wxerror = res.data
@@ -616,7 +628,8 @@ export default {
         qrcode: this.qrcode,
         cardnumber: this.member.cardNumber
       }
-      saveOrder(param).then(res => {
+      saveOrder(store.getters.branches, JSON.stringify(this.orderedlist), this.shouldpayamount, 
+        this.payedamount, this.changeamount, 3, this.qrcode, this.membercardnumber).then(res => {
         var arr = {
           seq: res.data.seq,
           orderdate: res.data.orderdate,
@@ -644,7 +657,8 @@ export default {
         qrcode: '',
         cardnumber: this.member.cardNumber
       }
-      saveOrder(param).then(res => {
+      saveOrder(store.getters.branches, JSON.stringify(this.orderedlist), this.shouldpayamount, 
+        this.payedamount, this.changeamount, 4, '', this.membercardnumber).then(res => {
         this.dialogAliVisible = false
         this.clearOrdered()
       })

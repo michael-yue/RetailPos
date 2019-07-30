@@ -26,35 +26,50 @@ export function queryUsers (usertype, currentPage, limit) {
   })
 }
 
-export function createCard (param) {
+export function createCard (shopid, cardNumber, realName, authcode, gender, mobile, idcardno, membertypeId) {
   return request({
     url: '/eldlyrest/createCard?t=' + Date.now(),
-    method: 'post',
-    data: {
-      param
+    method: 'get',
+    params: {
+      shopid,
+      cardNumber,
+      realName,
+      authcode,
+      gender,
+      mobile,
+      idcardno,
+      membertypeId
     }
   })
 }
 
-export function updateCard (param) {
+export function updateCard (id, shopid, cardNumber, realName, authcode, gender, mobile, idcardno, membertypeId) {
   return request({
     url: '/eldlyrest/updateCard?t=' + Date.now(),
-    method: 'post',
-    data: {
-      param
+    method: 'get',
+    params: {
+      id,
+      shopid,
+      cardNumber,
+      realName,
+      authcode,
+      gender,
+      mobile,
+      idcardno,
+      membertypeId
     }
   })
 }
 
-export function deleteUser (param) {
-  return request({
-    url: '/eldlyrest/deleteUser?t=' + Date.now(),
-    method: 'post',
-    data: {
-      param
-    }
-  })
-}
+// export function deleteUser (param) {
+//   return request({
+//     url: '/eldlyrest/deleteUser?t=' + Date.now(),
+//     method: 'post',
+//     data: {
+//       param
+//     }
+//   })
+// }
 
 export function queryPerson (cardnumber) {
   return request({
@@ -69,8 +84,8 @@ export function queryPerson (cardnumber) {
 export function addUserType (param) {
   return request({
     url: '/eldlyrest/addUserLevel?t=' + Date.now(),
-    method: 'post',
-    data: {
+    method: 'get',
+    params: {
       param
     }
   })

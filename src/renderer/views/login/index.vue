@@ -84,6 +84,16 @@ export default {
   },
   created: function () {
     // console.log(store.getters.device)
+    // var http = require('http')
+    // http.get('http://mdm.cchkxx.com/api/listwxbranch', function(res) {
+    //   res.setEncoding('utf8')
+    //   res.on('data', function(chunk){
+    //     console.log(chunk)
+    //   })
+    // })
+    // listAllMemberProductPrice('001').then( res => {
+    //   console.log(res)
+    // })
   },
   methods: {
     showPwd () {

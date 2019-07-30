@@ -1,10 +1,11 @@
 import request from '@/utils/request'
+import qs from 'qs'
 
 export function login (username, password) {
   return request({
     url: '/eldlyrest/login',
-    method: 'post',
-    data: {
+    method: 'get',
+    params: {
       username,
       password
     }
@@ -29,7 +30,7 @@ export function logout () {
 export function updateNormalPassword (userid, password, newpassword) {
   return request({
     url: '/eldlyrest/updateNormalPassword',
-    method: 'post',
+    method: 'get',
     data: { 
       userid,
       password,

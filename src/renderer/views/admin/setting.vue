@@ -89,7 +89,8 @@
         })
       },
       saveParam: function () {
-        saveSystemParam(this.systemParam).then(res => {
+        saveSystemParam(this.systemParam.shopId, this.systemParam.backPrinter, this.systemParam.frontPrinter, 
+          this.systemParam.frontPrintCount, this.systemParam.printBack, this.systemParam.printFront).then(res => {
           // console.log(res.data)
         })
       },

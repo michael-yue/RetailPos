@@ -40,7 +40,7 @@
         </el-row>
       </div>
       <el-table :data="memberInfo.transList" size="small" height="300px" v-show="contentVisible" style="font-size:13px;flex: 1 0 auto">
-        <el-table-column prop="transDate" label="日期" align="right">
+        <el-table-column prop="transDate" label="日期" align="center">
           <template slot-scope="props">
             <div>{{ props.row.transDate.time | formatDate }}</div>
           </template>

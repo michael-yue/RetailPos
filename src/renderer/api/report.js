@@ -73,15 +73,15 @@ export function getTransList (branchid, startdate, enddate, pagenum, pagesize) {
   })
 }
 
-export function deleteTrans (param) {
-  return request({
-    url: '/eldlyrest/deleteTrans',
-    method: 'post',
-    data: {
-      param
-    }
-  })
-}
+// export function deleteTrans (param) {
+//   return request({
+//     url: '/eldlyrest/deleteTrans',
+//     method: 'post',
+//     data: {
+//       param
+//     }
+//   })
+// }
 
 export function getSalesToday (shopid) {
   return request({

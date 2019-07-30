@@ -268,13 +268,15 @@ export default {
         if (valid) {
           this.$confirm('确认提交吗？', '提示', {})
             .then(() => {
-              console.log('this.edifrom')
-              console.log(this.editForm)
-              const para = Object.assign({}, this.editForm)
-              para.shopid = store.getters.branches
-              console.log(para)
+              // console.log('this.edifrom')
+              // console.log(this.editForm)
+              // const para = Object.assign({}, this.editForm)
+              // para.shopid = store.getters.branches
+              // console.log(para)
               this.loadingCreateMember = true
-              createCard(para).then(res => {
+              createCard(store.getters.branches, this.editForm.cardNumber, this.editForm.realName,
+                this.editForm.authcode, this.editForm.gender, this.editForm.mobile, this.editForm.idcardno,
+                this.editForm.membertypeId).then(res => {
                 if (res.code === 20000) {
                   this.$message({
                     message: '提交成功',
@@ -297,10 +299,13 @@ export default {
         if (valid) {
           this.$confirm('确认提交吗？', '提示', {})
             .then(() => {
-              const para = Object.assign({}, this.editForm)
-              console.log(para)
-              para.shopid = store.getters.branches
-              updateCard(para).then(res => {
+              // const para = Object.assign({}, this.editForm)
+              // console.log(para)
+              // para.shopid = store.getters.branches
+              // id, shopid, cardNumber, realName, authcode, gender, mobile, idcardno, membertypeId
+              updateCard(this.editForm.id, store.getters.branches, this.editForm.cardNumber, this.editForm.realName,
+                this.editForm.authcode, this.editForm.gender, this.editForm.mobile, this.editForm.idcardno,
+                this.editForm.membertypeId).then(res => {
                 if (res.code === 20000) {
                   this.$message({
                     message: '提交成功',

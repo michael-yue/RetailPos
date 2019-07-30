@@ -153,9 +153,11 @@ export default {
         if (valid) {
           this.$confirm('确认保存吗？', '提示', {})
             .then(() => {
-              const para = Object.assign({}, this.editForm)
-              para.shopid = store.getters.branches
-              updateMemberPrice(para).then(res => {
+              // const para = Object.assign({}, this.editForm)
+              // para.shopid = store.getters.branches
+              // shopid, product, pricelist
+              updateMemberPrice(store.getters.branches, JSON.stringify(this.editForm.product),
+                JSON.stringify(this.editForm.priceList)).then(res => {
                 if (res.code === 20000) {
                   this.$message({
                     message: '保存成功',

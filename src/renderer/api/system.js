@@ -1,11 +1,11 @@
 import request from '@/utils/request'
 
-export function saveSystemParam (param) {
+export function saveSystemParam (shopId, backPrinter, frontPrinter, frontPrintCount, printBack, printFront) {
   return request({
     url: '/eldlyrest/saveSystemParam?t=' + Date.now(),
-    method: 'post',
-    data: {
-      param
+    method: 'get',
+    params: {
+      shopId, backPrinter, frontPrinter, frontPrintCount, printBack, printFront
     }
   })
 }

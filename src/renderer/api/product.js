@@ -50,42 +50,46 @@ export function listAllAvaliableProductPrice (shopid, cusrtomertypeid) {
   })
 }
 
-export function updateProductType (param) {
+export function updateProductType (id, typeid, typename, orderseq, status) {
   return request({
     url: '/eldlyrest/updateProductType?t=' + Date.now(),
-    method: 'post',
-    data: {
-      param
+    method: 'get',
+    params: {
+      id,
+      typeid,
+      typename,
+      orderseq,
+      status
     }
   })
 }
 
-export function updateProduct (param) {
+export function updateProduct (id, shopid, productId, productName, orderSeq, price, productTypeId, status) {
   return request({
     url: '/eldlyrest/updateProduct?t=' + Date.now(),
-    method: 'post',
-    data: {
-      param
+    method: 'get',
+    params: {
+      id, shopid, productId, productName, orderSeq, price, productTypeId, status
     }
   })
 }
 
-export function createProductType (param) {
+export function createProductType (shopid, typeid, typename, orderseq, status) {
   return request({
     url: '/eldlyrest/createProductType?t=' + Date.now(),
-    method: 'post',
-    data: {
-      param
+    method: 'get',
+    param: {
+      shopid, typeid, typename, orderseq, status
     }
   })
 }
 
-export function createProduct (param) {
+export function createProduct (shopid, productId, productName, orderSeq, price, productTypeId, status) {
   return request({
     url: '/eldlyrest/createProduct?t=' + Date.now(),
-    method: 'post',
-    data: {
-      param
+    method: 'get',
+    params: {
+      shopid, productId, productName, orderSeq, price, productTypeId, status
     }
   })
 }
@@ -93,7 +97,7 @@ export function createProduct (param) {
 export function listAllMemberProduct (shopid, membertypeid) {
   return request({
     url: '/eldlyrest/listAllMemberProduct?t=' + Date.now(),
-    method: 'post',
+    method: 'get',
     params: {
       shopid,
       membertypeid
@@ -101,12 +105,12 @@ export function listAllMemberProduct (shopid, membertypeid) {
   })
 }
 
-export function updateMemberPrice (param) {
+export function updateMemberPrice (shopid, product, priceList) {
   return request({
     url: '/eldlyrest/updateMemberPrice?t=' + Date.now(),
-    method: 'post',
-    data: {
-      param
+    method: 'get',
+    params: {
+      shopid, product, priceList
     }
   })
 }

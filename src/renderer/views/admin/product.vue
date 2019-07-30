@@ -274,14 +274,17 @@ export default {
       this.dialogProductVisible = false
     },
     createProductType: function () {
-      var param = {
-        shopid: store.getters.branches,
-        typeid: this.editProductTypeForm.typeId,
-        typename: this.editProductTypeForm.typeName,
-        orderseq: this.editProductTypeForm.orderSeq,
-        status: this.editProductTypeForm.status
-      }
-      createProductType(param).then(res => {
+      // var param = {
+      //   shopid: store.getters.branches,
+      //   typeid: this.editProductTypeForm.typeId,
+      //   typename: this.editProductTypeForm.typeName,
+      //   orderseq: this.editProductTypeForm.orderSeq,
+      //   status: this.editProductTypeForm.status
+      // }
+      // shopid, typeid, typename, orderseq, status
+      createProductType(store.getters.branches, this.editProductTypeForm.typeId,
+        this.editProductTypeForm.typeName, this.editProductTypeForm.orderSeq,
+        this.editProductTypeForm.status).then(res => {
         if (res.code === 20000) {
           this.dialogProductTypeVisible = false
           this.retrieveData()
@@ -299,7 +302,10 @@ export default {
         orderseq: this.editProductTypeForm.orderSeq,
         status: this.editProductTypeForm.status
       }
-      updateProductType(param).then(res => {
+
+      updateProductType(this.editProductTypeForm.id, this.editProductTypeForm.typeId,
+        this.editProductTypeForm.typeName, this.editProductTypeForm.orderSeq,
+        this.editProductTypeForm.status).then(res => {
         if (res.code === 20000) {
           this.dialogProductTypeVisible = false
           this.retrieveData()
@@ -311,16 +317,18 @@ export default {
     createProduct: function () {
       this.loading = true
       var that = this
-      var param = {
-        shopid: store.getters.branches,
-        productId: this.editProductForm.productId,
-        productName: this.editProductForm.productName,
-        orderSeq: this.editProductForm.orderSeq,
-        status: this.editProductForm.status,
-        price: this.editProductForm.price,
-        productTypeId: this.editProductTypeId
-      }
-      createProduct(param).then(res => {
+      // var param = {
+      //   shopid: store.getters.branches,
+      //   productId: this.editProductForm.productId,
+      //   productName: this.editProductForm.productName,
+      //   orderSeq: this.editProductForm.orderSeq,
+      //   status: this.editProductForm.status,
+      //   price: this.editProductForm.price,
+      //   productTypeId: this.editProductTypeId
+      // }
+      createProduct(store.getters.branches, this.editProductForm.productId, this.editProductForm.productName, 
+        this.editProductForm.orderSeq, this.editProductForm.price, this.editProductTypeId,
+        this.editProductForm.status).then(res => {
         if (res.code === 20000) {
           this.retrieveData()
           this.dialogProductVisible = false
@@ -337,17 +345,19 @@ export default {
     updateProduct: function () {
       this.loading = true
       var that = this
-      var param = {
-        id: this.editProductForm.id,
-        shopid: store.getters.branches,
-        productId: this.editProductForm.productId,
-        productName: this.editProductForm.productName,
-        orderSeq: this.editProductForm.orderSeq,
-        price: this.editProductForm.price,
-        productTypeId: this.editProductTypeId,
-        status: this.editProductForm.status
-      }
-      updateProduct(param).then(res => {
+      // var param = {
+      //   id: this.editProductForm.id,
+      //   shopid: store.getters.branches,
+      //   productId: this.editProductForm.productId,
+      //   productName: this.editProductForm.productName,
+      //   orderSeq: this.editProductForm.orderSeq,
+      //   price: this.editProductForm.price,
+      //   productTypeId: this.editProductTypeId,
+      //   status: this.editProductForm.status
+      // }
+      updateProduct(this.editProductForm.id, store.getters.branches, this.editProductForm.productId,
+        this.editProductForm.productName, this.editProductForm.orderSeq, this.editProductForm.price,
+        this.editProductTypeId, this.editProductForm.status).then(res => {
         if (res.code === 20000) {
           this.retrieveData()
           this.dialogProductVisible = false

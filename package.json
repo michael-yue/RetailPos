@@ -1,9 +1,9 @@
 {
-  "name": "electron-print",
+  "name": "RetailPos",
   "version": "0.0.1",
   "author": "",
-  "description": "An electron-vue project",
-  "license": null,
+  "description": "Retail POS project",
+  "license": "MIT",
   "main": "./dist/electron/main.js",
   "scripts": {
     "build": "node .electron-vue/build.js && electron-builder",
@@ -17,8 +17,8 @@
     "postinstall": ""
   },
   "build": {
-    "productName": "electron-print",
-    "appId": "com.example.yourapp",
+    "productName": "RetailPos",
+    "appId": "com.whalker.retailpos",
     "directories": {
       "output": "build"
     },
@@ -52,17 +52,18 @@
     }
   },
   "dependencies": {
-    "vue": "^2.5.16",
     "axios": "^0.18.0",
     "element-ui": "2.4.6",
+    "file-saver": "^2.0.0-rc.3",
+    "js-cookie": "2.2.0",
+    "normalize.css": "7.0.0",
+    "nprogress": "0.2.0",
+    "qs": "^6.7.0",
+    "vue": "^2.5.16",
     "vue-electron": "^1.0.6",
     "vue-router": "^3.0.1",
     "vuex": "^3.0.1",
     "vuex-electron": "^1.0.0",
-    "file-saver": "^2.0.0-rc.3",
-    "js-cookie": "2.2.0",
-    "nprogress": "0.2.0",
-    "normalize.css": "7.0.0",
     "xml2js": "^0.4.19"
   },
   "devDependencies": {

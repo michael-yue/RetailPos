@@ -38,7 +38,8 @@ function createWindow() {
     frame: isSide,
     webPreferences: {webSecurity: false}
   })
-
+  
+  // mainWindow.webContents.openDevTools();
 
   //在主线程下，通过ipcMain对象监听渲染线程传过来的getPrinterList事件
   ipcMain.on('getPrinterList', (event) => {

@@ -6,9 +6,10 @@ import { getToken } from '@/utils/auth'
 // 创建axios实例
 const service = axios.create({
   // baseURL: process.env.BASE_API, // api 的 base_url
-  baseURL: 'http://mdm.cchkxx.com',
+  baseURL: 'https://mdm.cchkxx.com',
   // baseURL: 'http://192.168.2.1:8080/MTOMWEB',
-  timeout: 30000 // 请求超时时间
+  timeout: 30000, // 请求超时时间
+  // withCredentials: false
 })
 
 // request拦截器
