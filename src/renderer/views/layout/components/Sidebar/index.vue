@@ -44,7 +44,7 @@ export default {
 
 <style scoped>
 .el-scrollbar{height:100%}
-.el-scrollbar >>> .el-scrollbar__wrap{height:100% ; overflow:hidden}
+.el-scrollbar >>> .el-scrollbar__wrap{height:100% ; overflow:hidden; margin-right: 0}
 .el-scrollbar >>> .el-scrollbar__view{height:100%}
 .drawer-bg {
     background: #000;

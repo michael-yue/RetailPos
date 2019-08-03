@@ -77,8 +77,8 @@
             会员卡号
           </div>
           <div style="flex: 1; display:flex;">
-            <el-input v-model = "inputCardnumber" :focus="true" autofocus @keyup.enter.native="getCardInfo"/>
-            <!-- <el-button icon="el-icon-search" size="small" @click="searchMember"></el-button> -->
+            <el-input v-model="inputCardnumber" :focus="true" autofocus @keyup.enter.native="getCardInfo"/>
+            <el-button icon="el-icon-search" size="small" @click="searchMember">查找</el-button>
           </div>
         </div>
         <div style="display:flex;margin:10px 0">
@@ -199,22 +199,52 @@
       title="查询会员卡"
       top="5vh">
       <div style="font-size:18px">
-        <div style="display: flex; flex-direction:column">
+        <div style="display: flex; flex-direction:column;">
           <div style="display:flex; align-items: center;margin:10px 10px; font-size:14px">
             <span style="flex:0 0 auto; margin-right:5px;">会员卡号</span>
             <el-input v-model="searchForm.cardnumber" label="会员卡号" size="small" />
             <span style="flex:0 0 auto;margin: 0px 5px; font-size:14px">电话</span>
             <el-input v-model="searchForm.mobile" label="电话" size="small" />
+            <span style="flex:0 0 auto;margin: 0px 5px; font-size:14px">姓名</span>
+            <el-input v-model="searchForm.name" label="姓名" size="small" />
             <div style="padding-left:5px; display: inherit">
-              <el-button plain size="small" type="primary">查询</el-button>
-              <el-button plain size="small" type="primary">新建</el-button>
+              <el-button plain size="small" type="primary" @click="queryMembers">查询</el-button>
             </div>
+          </div>
+          <el-table
+            v-loading="loadingMemberList"
+            ref="refTable"
+            :data="memberlist"
+            @current-change="handleMemberListCurrentChange"
+            highlight-current-row
+            border
+            size="small"
+            height="300px">
+            <el-table-column v-model="cardnumber" prop="cardnumber" label="卡号" width="" header-align="center" align="left" />
+            <el-table-column prop="realname" label="姓名" width="" header-align="center" align="left" />
+            <el-table-column prop="gender" label="性别" width="" header-align="center" align="left">
+              <template slot-scope="props">
+                <div v-if="props.row.gender === '1'">男</div>
+                <div v-else>女</div>
+              </template>
+            </el-table-column>
+            <el-table-column prop="mobile" label="电话" width="" header-align="center" align="left" />
+            <el-table-column prop="memberType.name" label="类型" width="" header-align="center" align="left" />
+          </el-table>
+          <div style="margin-top:10px; text-align: right">
+            <el-pagination
+              :current-page="currentPage"
+              :page-size="limit"
+              :total="total"
+              layout="total, sizes, prev, pager, next"
+              @size-change="handleSizeChange"
+              @current-change="pagechange" />
           </div>
         </div>
       </div>
       <span slot="footer" class="dialog-footer">
-        <el-button size="medium" @click="dialogCardVisible = false">取 消</el-button>
-        <el-button type="primary" @click="recieveCard">确定支付</el-button>
+        <el-button size="medium" @click="dialogMemberSearchVisible = false">取 消</el-button>
+        <el-button type="primary" @click="confirmMemberSelect">确定选择</el-button>
       </span>
     </el-dialog>
     <div style="z-index: -1000; position:absolute;">
@@ -228,7 +258,7 @@
 import store from '@/store'
 import { listAllAvaliableProductType, listAllAvaliableProduct } from '@/api/product.js'
 import { saveOrder } from '@/api/order.js'
-import { queryPerson, listAllMemberType } from '@/api/person.js'
+import { listAllUser, queryPerson, listAllMemberType } from '@/api/person.js'
 import { getSystemParam } from '@/api/system.js'
 import { parseTime } from '@/utils'
 import { ipcRenderer } from 'electron'
@@ -271,11 +301,16 @@ export default {
       wxerror: '',
       cardpayerror: '',
       searchForm: {
-        memberTypeId: 0,
         cardnumber: '',
         mobile: ''
       },
-      loadingWxPay: false
+      loadingWxPay: false,
+      memberlist: [],
+      currentPage: 1,
+      limit: 10,
+      total: 0,
+      currentMemberListRow: null,
+      loadingMemberList: false,
     }
   },
   watch: {
@@ -341,6 +376,35 @@ export default {
         this.products = res.data
         this.recalcuateOrder()
       })
+    },
+    queryMembers: function() {
+      this.memberlist = []
+      this.loadingMemberList = true
+      console.log(this.selectMemberType)
+      listAllUser(this.selectMemberType, this.searchForm.cardnumber, this.name, this.mobile, this.currentPage, this.limit).then(response => {
+        this.memberlist = response.data
+        this.total = response.totalnum
+        this.loadingMemberList = false
+      }).catch(error => {
+        console.log(error)
+      })
+    },
+    // 分页处理
+    pagechange: function (currentPage) {
+      this.currentPage = currentPage
+      this.retrieve()
+    },
+    handleSizeChange: function (currentSize) {
+      this.limit = currentSize
+      this.retrieve()
+    },
+    handleMemberListCurrentChange(val) {
+      this.currentMemberListRow = val;
+    },
+    confirmMemberSelect() {
+      console.log(this.currentMemberListRow)
+      this.inputCardnumber = this.currentMemberListRow.cardnumber
+      this.dialogMemberSearchVisible = false
     },
     memberTypeChanged: function (item) {
       this.selectMemberType = item

@@ -136,6 +136,7 @@ export default {
       listOrders(store.getters.branches, repdatefrom, repdateto, this.payway, this.currentPage, this.limit).then(response => {
         that.total = response.total
         that.orders = response.data
+        console.log(response)
         this.loading = false
       }).catch(error => {
         console.log(error)

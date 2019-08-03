@@ -71,6 +71,15 @@ let rendererConfig = {
         }
       },
       {
+        test: /\.(svg)(\?.*)?$/,
+        use: {
+          loader: 'file-loader',
+          options: {
+            name: 'icons/svg/[name]--[folder].[ext]'
+          }
+        }
+      },
+      {
         test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,
         use: {
           loader: 'url-loader',

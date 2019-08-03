@@ -12,7 +12,7 @@
       <el-form-item prop="password">
         <span class="svg-container">
           <!-- <svg-icon icon-class="password" /> -->
-          <i class="el-icon-key" />
+          <i class="el-icon-lock" />
         </span>
         <el-input
           :type="pwdType"

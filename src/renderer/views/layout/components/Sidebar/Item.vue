@@ -1,7 +1,10 @@
 <template>
-  <div style="display:flex; flex-direction: column">
+  <div>
     <!-- <svg-icon :icon-class="icon" /> -->
-    <span slot="title">{{title}}</span>
+    <span style="display:flex; flex-direction: column">
+      <!-- <i class="el-icon-lock"/> -->
+      <span slot="title">{{title}}</span>
+    </span>
   </div>
 </template>
 
