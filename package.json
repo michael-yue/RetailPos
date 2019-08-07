@@ -1,5 +1,5 @@
 {
-  "name": "RetailPos",
+  "name": "retailpos",
   "version": "0.0.1",
   "author": "",
   "description": "Retail POS project",
@@ -54,7 +54,7 @@
   },
   "dependencies": {
     "axios": "^0.18.0",
-    "element-ui": "2.4.6",
+    "element-ui": "2.11.0",
     "file-saver": "^2.0.0-rc.3",
     "js-cookie": "2.2.0",
     "normalize.css": "7.0.0",

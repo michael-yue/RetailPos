@@ -220,16 +220,16 @@
             border
             size="small"
             height="300px">
-            <el-table-column v-model="cardnumber" prop="cardnumber" label="卡号" width="" header-align="center" align="left" />
-            <el-table-column prop="realname" label="姓名" width="" header-align="center" align="left" />
-            <el-table-column prop="gender" label="性别" width="" header-align="center" align="left">
+            <el-table-column v-model="cardnumber" prop="cardnumber" label="卡号" width="150px" header-align="center" align="left" />
+            <el-table-column prop="realname" label="姓名" width="100px" header-align="center" align="left" />
+            <el-table-column prop="gender" label="性别" width="80px" header-align="center" align="left">
               <template slot-scope="props">
                 <div v-if="props.row.gender === '1'">男</div>
                 <div v-else>女</div>
               </template>
             </el-table-column>
             <el-table-column prop="mobile" label="电话" width="" header-align="center" align="left" />
-            <el-table-column prop="memberType.name" label="类型" width="" header-align="center" align="left" />
+            <el-table-column prop="memberType.name" label="类型" width="100px" header-align="center" align="left" />
           </el-table>
           <div style="margin-top:10px; text-align: right">
             <el-pagination
@@ -381,7 +381,7 @@ export default {
       this.memberlist = []
       this.loadingMemberList = true
       console.log(this.selectMemberType)
-      listAllUser(this.selectMemberType, this.searchForm.cardnumber, this.name, this.mobile, this.currentPage, this.limit).then(response => {
+      listAllUser(this.selectMemberType, this.searchForm.cardnumber, this.searchForm.name, this.searchForm.mobile, this.currentPage, this.limit).then(response => {
         this.memberlist = response.data
         this.total = response.totalnum
         this.loadingMemberList = false
