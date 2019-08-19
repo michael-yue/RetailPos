@@ -42,14 +42,82 @@
       </el-table>
     </div>
     <div style="margin-top:10px; text-align: right">
-        <el-pagination
-          :current-page="currentPage"
-          :page-size="limit"
-          :total="total"
-          layout="total, sizes, prev, pager, next"
-          @size-change="handleSizeChange"
-          @current-change="pagechange" />
+      <el-pagination
+        :current-page="currentPage"
+        :page-size="limit"
+        :total="total"
+        layout="total, sizes, prev, pager, next"
+        @size-change="handleSizeChange"
+        @current-change="pagechange" />
+    </div>
+    <el-dialog
+      :visible.sync="dialogDetail"
+      :fullscreen="false"
+      :modal="true"
+      :show-close="false"
+      :loading="refundloading"
+      title="订单详细信息"
+      width="80%"
+      top="5vh">
+      <div v-modal="order">
+        <el-main>
+          <div class="lineinfo">
+            <div class="label">订单编号：</div>
+            <div class="value">{{ order.billid }}</div>
+          </div>
+          <div class="lineinfo">
+            <div class="label">点餐时间：</div>
+            <div class="value">{{ order.orderdatetime.time | formatDate }}</div>
+          </div>
+          <div class="lineinfo">
+            <div class="label">桌台：</div>
+            <div class="value">第{{ order.tableid }}台</div>
+          </div>
+          <div class="lineinfo">
+            <div class="label">总金额：</div>
+            <div class="value">{{ order.totalamount }}</div>
+          </div>
+          <div class="lineinfo">
+            <div class="label">收款金额：</div>
+            <div class="value">{{ order.payedamount }}</div>
+          </div>
+          <div class="lineinfo">
+            <div class="label">微信支付号：</div>
+            <div class="value">{{ order.wxTransactionId }}</div>
+          </div>
+        </el-main>
+        <el-table
+          v-loading="loading"
+          ref="refTable"
+          :data="order.lines"
+          :class="{'tablestyle': true}"
+          size="small"
+          height="100%">
+          <el-table-column prop="prodid" label="代码" width="80" header-align="left" align="left" />
+          <el-table-column prop="prodname" label="产品" width="" header-align="left" align="left" />
+          <el-table-column prop="zf" label="做法要求" width="" header-align="left" label-class-name	="header" align="left" />
+          <el-table-column prop="qty" label="数量" width="80" header-align="right" align="right" />
+          <el-table-column prop="refundQty" label="已退数量" width="100" header-align="right" align="right" />
+          <el-table-column prop="refundqty" label="退单数量" width="" header-align="right" align="right">
+            <template slot-scope="props">
+              <div style="display:flex;justify-content:flex-end">
+                <el-input-number v-model="props.row.refundnum" :min="0" :max="props.row.qty - props.row.refundQty" size="small" label="退单数量" @change="handleRefundQtyChange" />
+              </div>
+            </template>
+          </el-table-column>
+          <el-table-column prop="prodid" label="操作" width="" header-align="right" align="right" >
+            <template slot-scope="props">
+              <div style="display:flex;justify-content:flex-end">
+                <el-button type="danger" size="small" @click="refund(order.id, props.row)">退单</el-button>
+              </div>
+            </template>
+          </el-table-column>
+        </el-table>
       </div>
+      <span slot="footer" class="dialog-footer">
+        <el-button size="medium" @click="dialogDetail = false">关  闭</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -71,6 +139,8 @@ export default {
       limit: 10,
       total: 0,
       payway: 0,
+      dialogDetail: false,
+      refundloading: false,
       pickerOptions: {
         shortcuts: [
           {

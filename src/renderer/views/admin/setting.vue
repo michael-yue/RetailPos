@@ -51,7 +51,7 @@
 <script>
   import store from '@/store'
   import { getSystemParam, saveSystemParam } from '@/api/system'
-  const ipcRenderer = require('electron').ipcRenderer
+  const ipcRenderer = window.require('electron').ipcRenderer
   export default {
     name: 'setting',
     data () {

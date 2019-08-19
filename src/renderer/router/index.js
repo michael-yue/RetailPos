@@ -121,7 +121,7 @@ export const asyncRouterMap = [
   {
     path: '/system',
     component: require('@/views/layout/layout').default,
-    meta: { title: '设置', icon: 'example', roles: ['admin', 'branch'] },
+    meta: { title: '设置', icon: 'example', roles: ['branch'] },
     children: [
       {
         path: '/system/setting',
@@ -134,21 +134,21 @@ export const asyncRouterMap = [
         name: 'usertype',
         component: require('@/views/admin/usertypeList').default,
         hidden: true,
-        meta: { title: '会员卡类型设置', icon: 'table', roles: ['admin', 'branch'] }
+        meta: { title: '会员卡类型设置', icon: 'table', roles: ['branch'] }
       },
       {
         path: '/system/product',
         name: 'product',
         component: require('@/views/admin/product').default,
         hidden: true,
-        meta: { title: '产品设置', icon: 'table', roles: ['admin', 'branch'] }
+        meta: { title: '产品设置', icon: 'table', roles: ['branch'] }
       },
       {
         path: '/system/memberproductprice',
         name: 'memberproductprice',
         component: require('@/views/admin/memberproductprice').default,
         hidden: true,
-        meta: { title: '会员价格设置', icon: 'table', roles: ['admin', 'branch'] }
+        meta: { title: '会员价格设置', icon: 'table', roles: ['branch'] }
       }
     ]
   }

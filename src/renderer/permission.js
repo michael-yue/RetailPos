@@ -10,15 +10,9 @@ router.beforeEach((to, from, next) => {
   NProgress.start()
   if (getToken()) {
     if (getToken() === '') {
-      console.log('store.getters.tolen == null')
-      // next(`/login`) // 否则全部重定向到登录页
       if (whiteList.indexOf(to.path) !== -1) {
-        console.log('a')
         next()
-        // next(`/login`)
       } else {
-        console.log('b')
-        // next(`/login?redirect=${to.path}`) // 否则全部重定向到登录页
         next(`/login`) // 否则全部重定向到登录页
         NProgress.done()
       }
@@ -27,8 +21,6 @@ router.beforeEach((to, from, next) => {
       next({ path: '/' })
       NProgress.done() // if current page is dashboard will not trigger afterEach hook, so manually handle it
     } else {
-      // console.log('store.getters.roles:' + store.getters.roles)
-      // console.log('permision: token = ' + store.getters.token)
       if (store.getters.roles.length === 0) { // 判断当前用户是否已拉取完user_info信息
         store.dispatch('GetInfo').then(res => { // 拉取user_info
           const roles = res.data.roles // note: roles must be a array! such as: ['editor','develop']
@@ -48,10 +40,8 @@ router.beforeEach((to, from, next) => {
     }
   } else {
     if (whiteList.indexOf(to.path) !== -1) {
-      console.log('sa1')
       next()
     } else {
-      console.log('sa2')
       next(`/login?redirect=${to.path}`) // 否则全部重定向到登录页
       NProgress.done()
     }

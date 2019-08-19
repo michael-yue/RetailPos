@@ -4,7 +4,7 @@ import {
   ipcMain
 } from 'electron'
 import appIcon from './tray'
-import localStorage from './localStorage'
+// import localStorage from './localStorage'
 
 /**
  * Set `__static` path to static files in production
@@ -23,9 +23,9 @@ function createWindow() {
   /**
    * Initial window options
    */
-  var isSide = localStorage.getItem('winSideSetting') === 'true'
+  // var isSide = localStorage.getItem('winSideSetting') === 'true'
   mainWindow = new BrowserWindow({
-    minHeight: 720, // 尤其是 有着1T 显存的 gt630 战术核显卡，只要一发就能摧毁一个航母战斗群。
+    minHeight: 720, 
     height: 720,
     useContentSize: true,
     minWidth: 1195,
@@ -35,7 +35,7 @@ function createWindow() {
     resizable: true,
     icon: '../../build/icons/256x256.png',
     darkTheme: true,
-    frame: isSide,
+    // frame: isSide,
     webPreferences: {webSecurity: false}
   })
   
