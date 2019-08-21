@@ -107,18 +107,27 @@
       title="会员充值"
       top="5vh">
       <div>
-        <el-form :model="rechargeForm" label-width="180px">
+        <el-form :modal="rechargeForm" label-width="100px">
           <el-form-item label="会员卡号">
             <span> {{rechargeForm.cardnumber}}</span>
+          </el-form-item>
+          <el-form-item label="会员名称">
+            <span> {{rechargeForm.name}}</span>
+          </el-form-item>
+          <el-form-item label="会员类型">
+            <span> {{rechargeForm.type}}</span>
+          </el-form-item>
+          <el-form-item label="充值方式">
+            <el-radio-group v-model="rechargeForm.payway">
+              <el-radio-button :label="1">现金</el-radio-button>
+              <el-radio-button :label="2">微信</el-radio-button>
+            </el-radio-group>
           </el-form-item>
           <el-form-item label="充值金额">
             <el-input v-model="rechargeForm.rechargeamount" />
           </el-form-item>
-          <el-form-item label="充值方式">
-            <el-radio-group v-model="rechargeForm.payway">
-              <el-radio-button :label="1">微信</el-radio-button>
-              <el-radio-button :label="3">现金</el-radio-button>
-            </el-radio-group>
+          <el-form-item v-if="rechargeForm.payway == '2'" label="扫码">
+            <el-input v-model="rechargeForm.qrcode" @keyup.native.enter="recharge"/>
           </el-form-item>
         </el-form>
       </div>
@@ -132,7 +141,7 @@
 
 <script>
 import store from '@/store'
-import { listAllUser, createCard, updateCard } from '@/api/person.js'
+import { listAllUser, createCard, updateCard, recharge} from '@/api/person.js'
 import MemberTypeSelector from '@/components/widgets/MemberTypeSelector'
 
 export default {
@@ -177,6 +186,8 @@ export default {
       },
       rechargeForm: {
         cardnumber: '',
+        name: '',
+        type: '',
         payway: 1,
         rechargeamount: ''
       },
@@ -268,11 +279,6 @@ export default {
         if (valid) {
           this.$confirm('确认提交吗？', '提示', {})
             .then(() => {
-              // console.log('this.edifrom')
-              // console.log(this.editForm)
-              // const para = Object.assign({}, this.editForm)
-              // para.shopid = store.getters.branches
-              // console.log(para)
               this.loadingCreateMember = true
               createCard(store.getters.branches, this.editForm.cardNumber, this.editForm.realName,
                 this.editForm.authcode, this.editForm.gender, this.editForm.mobile, this.editForm.idcardno,
@@ -324,12 +330,27 @@ export default {
       })
     },
     showRecharge: function (index, row) {
-      console.log(index)
+      console.log(row)
+      this.rechargeForm.cardnumber = row.cardnumber
+      this.rechargeForm.name = row.realname
+      this.rechargeForm.type = row.memberType.name
       this.dialogRechargeFormVisible = true
     },
     recharge: function () {
-      console.log('recharge')
-      this.dialogRechargeFormVisible = true
+      var cardnumber = this.rechargeForm.cardnumber
+      var payway = this.rechargeForm.payway
+      var amount = this.rechargeForm.rechargeamount
+      if (amount == ''){
+        return
+      }
+      var qrcode = ''
+      if (payway === '2') {
+        qrcode = this.rechargeForm.qrcode
+      }
+      recharge(store.getters.branches, cardnumber, payway, amount, qrcode).then(res =>{
+        this.printRecharge(res.data)
+      })
+      this.dialogRechargeFormVisible = false
     },
     closeRechargeDialog: function () {
       this.dialogRechargeFormVisible = false
@@ -340,6 +361,9 @@ export default {
       } else if (key === '2') {
         this.$router.push('/member/memberQuery')
       }
+    },
+    printRecharge(param){
+      console.log(param)
     }
   }
 }

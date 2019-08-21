@@ -20,7 +20,7 @@
       </div>
     </div>
     <div :style="{height: myHeight}" style="padding:0 20px 10px 20px;">
-      <el-table :data="orders" :header-cell-style="tableheader" size="small" height="100%">
+      <el-table :data="orders" :header-cell-style="tableheader" size="small" height="100%" :key="tablekey">
         <el-table-column prop="productid" label="产品代码" align="left"/>
         <el-table-column prop="productname" label="名称" align="left" />
         <el-table-column prop="qty" label="数量" align="right"/>
@@ -44,6 +44,7 @@ export default {
     return {
       activeIndex: '2',
       orders: [],
+      tablekey: 1,
       myHeight: '',
       repdate: '',
       selectedDate: '',
@@ -108,6 +109,7 @@ export default {
       getSalesGroupByDate(store.getters.branches, repdatefrom, repdateto).then(response => {
         console.log(response)
         this.orders = response.data
+        this.tablekey ++
       }).catch(error => {
         console.log(error)
       })

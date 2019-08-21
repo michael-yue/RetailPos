@@ -21,7 +21,7 @@
       </div>
     </div>
     <div :style="{height: myHeight}" style="padding:0 20px 10px 20px;">
-      <el-table v-loading="loading" :data="tableData" :header-cell-style="tableheader" size="small" height="100%">
+      <el-table show-summary v-loading="loading" :data="tableData" :header-cell-style="tableheader" size="small" height="100%">
         <el-table-column prop="transDate" label="时间" />
         <el-table-column
           v-for="item in tableConfig"

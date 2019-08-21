@@ -146,3 +146,17 @@ export function queryMemberInfoByAuthcode (shopid, authcode) {
     }
   })
 }
+
+export function recharge (shopid, cardnumber, payway, amount, authcode) {
+  return request({
+    url: '/eldlyrest/recharge?t=' + Date.now(),
+    method: 'get',
+    params: {
+      shopid,
+      cardnumber,
+      payway,
+      amount,
+      authcode
+    }
+  })
+}

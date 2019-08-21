@@ -21,7 +21,7 @@
       </div>
     </div>
     <div :style="{height: myHeight}" style="padding:0 20px 10px 20px;">
-      <el-table v-loading="loading" :data="orders" :header-cell-style="tableheader" size="small" height="100%">
+      <el-table border show-summary v-loading="loading" :data="orders" size="small" height="100%" :key="tablekey">
         <el-table-column prop="transdate" label="时间" />
         <el-table-column prop="count" label="人数" align="right"/>
         <el-table-column prop="amount" label="金额" align="right"/>
@@ -60,6 +60,7 @@ export default {
       repdate: '',
       dateRange: '',
       loading: false,
+      tablekey: 1,
       pickerOptions: {
         shortcuts: [
           {
@@ -123,6 +124,7 @@ export default {
       getIncomeGroupByDate(store.getters.branches, repdatefrom, repdateto).then(response => {
         console.log(response)
         this.orders = response.data
+        this.tablekey++
         this.loading = false
       }).catch(error => {
         console.log(error)

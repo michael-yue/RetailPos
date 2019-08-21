@@ -132,6 +132,14 @@ export default {
   data () {
     return {
       orders: [],
+      order: {
+        billid: '',
+        orderdatetime: {
+          time: ''
+        },
+        tableid: '',
+        totalamount: 0
+      },
       dateRange: [],
       myHeight: 0,
       loading: false,
