@@ -72,7 +72,7 @@ export const asyncRouterMap = [
   },
   {
     path: '/report',
-    component: require('@/views/layout/layout').default,
+    component: require('@/views/layout/layoutReport').default,
     meta: { title: '报表', icon: 'example', roles: ['admin', 'branch'] },
     breadcrumb: false,
     children: [
@@ -95,12 +95,19 @@ export const asyncRouterMap = [
         hidden: true,
         component: require('@/views/report/reportByMember').default,
         meta: { title: '报表', icon: 'table', roles: ['admin', 'branch'] }
+      },
+      {
+        path: '/report/reportMemberRecharge',
+        name: 'reportMemberRecharge',
+        hidden: true,
+        component: require('@/views/report/reportMemberRecharge').default,
+        meta: { title: '报表', icon: 'table', roles: ['admin', 'branch'] }
       }
     ]
   },
   {
     path: '/member',
-    component: require('@/views/layout/layout').default,
+    component: require('@/views/layout/LayoutMember').default,
     meta: { title: '会员', icon: 'example', roles: ['admin', 'branch'] },
     children: [
       {
@@ -120,7 +127,7 @@ export const asyncRouterMap = [
   },
   {
     path: '/system',
-    component: require('@/views/layout/layout').default,
+    component: require('@/views/layout/layoutSetting').default,
     meta: { title: '设置', icon: 'example', roles: ['branch'] },
     children: [
       {

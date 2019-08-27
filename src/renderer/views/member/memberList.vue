@@ -1,10 +1,10 @@
 <template>
   <div class="memberlist">
     <div ref="critheader" class="critheader">
-      <el-menu ref="membermenu" :default-active="activeIndex" class="el-menu-demo" mode="horizontal" @select="handleSelect">
+      <!-- <el-menu ref="membermenu" :default-active="activeIndex" class="el-menu-demo" mode="horizontal" @select="handleSelect">
         <el-menu-item index="1">会员列表</el-menu-item>
         <el-menu-item index="2">会员查询</el-menu-item>
-      </el-menu>
+      </el-menu> -->
       <div style="display:flex; align-items: center;margin:10px 10px; font-size:14px">
         <span style="flex:0 0 auto; margin-right:5px;">会员类型</span>
           <MemberTypeSelector :member-type-id="memberTypeId" @MemberTypeChanged="MemberTypeChangedEvent" />
@@ -136,6 +136,9 @@
         <el-button type="primary" @click="recharge">充 值</el-button>
       </span>
     </el-dialog>
+    <div style="z-index: -1000; position:absolute; left:0; top:9000px">
+      <webview ref="printRechargeView" src="../../../static/printCustomerRecharge.html" nodeintegration></webview>
+    </div>
   </div>
 </template>
 
@@ -143,7 +146,9 @@
 import store from '@/store'
 import { listAllUser, createCard, updateCard, recharge} from '@/api/person.js'
 import MemberTypeSelector from '@/components/widgets/MemberTypeSelector'
-
+import { getSystemParam } from '@/api/system.js'
+import { parseTime } from '@/utils'
+import { ipcRenderer } from 'electron'
 export default {
   name: 'MemberList',
   components: {
@@ -151,7 +156,7 @@ export default {
   },
   data () {
     return {
-      activeIndex: '1',
+      // activeIndex: '1',
       myHeight: '',
       loading: false,
       tableData: [],
@@ -197,17 +202,23 @@ export default {
   mounted () {
     const h = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight // 浏览器高度
     const critheaderheight = this.$refs.critheader.offsetHeight
-    this.myHeight = (h - critheaderheight - 100) + 'px'
+    this.myHeight = (h - critheaderheight - 150) + 'px'
     var that = this
     window.onresize = function windowResize () {
       const h = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight // 浏览器高度
-      that.myHeight = (h - critheaderheight - 100) + 'px'
+      that.myHeight = (h - critheaderheight - 150) + 'px'
     }
   },
   created: function () {
-    // this.retrieve()
+    this.getSystemParam()
   },
   methods: {
+    getSystemParam: function () {
+      getSystemParam(store.getters.branches).then(res => {
+        this.sysParam = res.data
+        this.setPrinter(this.$refs.printRechargeView, this.sysParam.frontPrinter)
+      })
+    },
     query: function () {
       this.retrieve()
     },
@@ -355,15 +366,52 @@ export default {
     closeRechargeDialog: function () {
       this.dialogRechargeFormVisible = false
     },
-    handleSelect (key, keyPath) {
-      if (key === '1') {
-        this.$router.push('/member/memberList')
-      } else if (key === '2') {
-        this.$router.push('/member/memberQuery')
-      }
+    // handleSelect (key, keyPath) {
+    //   if (key === '1') {
+    //     this.$router.push('/member/memberList')
+    //   } else if (key === '2') {
+    //     this.$router.push('/member/memberQuery')
+    //   }
+    // },
+    setPrinter (webview, printer) {
+      webview.addEventListener('dom-ready', () => {
+        console.log('dom-ready')
+        // webview.openDevTools() // 这个方法可以打开print.html的控制台
+      })
+      webview.addEventListener('ipc-message', event => {
+        if (event.channel === 'pong') {
+          webview.print(
+            {
+              silent: true,
+              printBackground: false,
+              deviceName: printer
+            },
+            data => {
+              console.log('webview success', data)
+            }
+          )
+        }
+      })
     },
     printRecharge(param){
+      var payway = '现金'
+      if (this.rechargeForm.payway === '2') {
+        payway = '微信支付'
+      }
+      // const date = new Date()
+      // var rechargeDate = parseTime(date, '{y}-{m}-{d} {h}:{i}')
+      // var param = {
+      //   cardnumber: param.cardnumber,
+      //   realname: param.realname,
+      //   memberTypeName: param.memberType.name,
+      //   payway: payway,
+      //   rechargeamount: this.rechargeForm.rechargeamount,
+      //   balance: param.balance,
+      //   rechargedate: rechargeDate
+      // }
       console.log(param)
+      const webview = this.$refs.printRechargeView
+      webview.send('ping', param)
     }
   }
 }

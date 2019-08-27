@@ -1,12 +1,12 @@
 <template>
   <div class="setting">
     <div ref="critheader" style="padding:10px 20px">
-      <el-menu ref="adminmenu" :default-active="activeIndex" class="el-menu-demo" mode="horizontal" @select="handleSelect">
+      <!-- <el-menu ref="adminmenu" :default-active="activeIndex" class="el-menu-demo" mode="horizontal" @select="handleSelect">
         <el-menu-item index="1">设置打印机</el-menu-item>
         <el-menu-item index="2">会员类型</el-menu-item>
         <el-menu-item index="3">产品设置</el-menu-item>
         <el-menu-item index="4">会员价格</el-menu-item>
-      </el-menu>
+      </el-menu> -->
     </div>
     <el-card>
       <span class="subtitle">打印相关</span>
@@ -93,18 +93,18 @@
           this.systemParam.frontPrintCount, this.systemParam.printBack, this.systemParam.printFront).then(res => {
           // console.log(res.data)
         })
-      },
-      handleSelect (key, keyPath) {
-        if (key === '1') {
-          this.$router.push('/system/setting')
-        } else if (key === '2') {
-          this.$router.push('/system/usertype')
-        } else if (key === '3') {
-          this.$router.push('/system/product')
-        } else if (key === '4') {
-          this.$router.push('/system/memberproductprice')
-        }
       }
+      // handleSelect (key, keyPath) {
+      //   if (key === '1') {
+      //     this.$router.push('/system/setting')
+      //   } else if (key === '2') {
+      //     this.$router.push('/system/usertype')
+      //   } else if (key === '3') {
+      //     this.$router.push('/system/product')
+      //   } else if (key === '4') {
+      //     this.$router.push('/system/memberproductprice')
+      //   }
+      // }
     },
     mounted () {
       // this.getPrinters()

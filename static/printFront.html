@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="https://cdn.bootcss.com/vue/2.2.2/vue.min.js"></script>
+    <title></title>
+    <style>        
+        @page {
+            margin: 0;
+        }
+        
+        #app{display: flex; flex-direction: column; }
+        .title{ font-size: 16px}
+        .lines{ display:flex; justify-content: space-between; padding: 10px 5px }
+    </style>
+</head>
+
+<body>
+    <div id='app'>
+        <!-- <span class='title'>客人点单</span> -->
+        <span style="border-bottom: 1px solid #000; padding-bottom:2px; font-size:24px">单号: {{ param.seq }}</span>
+
+        <!-- <div class="a" v-for="v in arr">{{v}}</div> -->
+        <div class="lines" v-for="v in param.orderline">
+            <div>{{ v.name }} </div>
+            <div>x {{ v.qty }}</div>
+        </div>
+        <div style="display: flex; justify-content: space-between;margin:5px 0; border-top: 1px solid #000;padding-top:5px">
+            <span>{{ param.payway }}</span>
+            <span>
+                合计金额: {{ param.shouldpayamount }}
+            </span>
+        </div>
+        <div v-if="param.payway == '会员卡支付'" style=" padding-top:2px">
+            会员卡余额: {{param.balance}}
+        </div>
+        <div style=" padding-top:2px; text-align: right">
+            日期: {{param.orderdate}}
+        </div>
+    </div>
+</body>
+<script>
+    //引入ipcRenderer对象
+    const { ipcRenderer } = require('electron')
+    new Vue({
+        el: "#app",
+        data: {
+            param: {}
+        },
+        mounted() {
+            ipcRenderer.on('ping', (e, param) => { //接收响应
+                // console.log('get ping')
+                this.param = param;
+                ipcRenderer.sendToHost('pong') //向webview所在页面的进程传达消息
+            })
+        },
+        methods: {}
+    })
+</script>
+
+</html>

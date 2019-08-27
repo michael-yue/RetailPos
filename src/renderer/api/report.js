@@ -92,3 +92,16 @@ export function getSalesToday (shopid) {
     }
   })
 }
+
+export function queryRechargeAmountByDate (shopid, datefrom, dateto) {
+  return request({
+    url: '/eldlyrest/queryRechargeAmountByDate',
+    method: 'get',
+    params: {
+      shopid,
+      datefrom,
+      dateto
+    }
+  })
+}
+

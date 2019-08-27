@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="https://cdn.bootcss.com/vue/2.2.2/vue.min.js"></script>
+    <title></title>
+    <style>        
+        @page {
+            margin: 0;
+        }
+        
+        #app{display: flex; flex-direction: column; }
+        .title{ border-bottom: 1px solid #000; padding-bottom:2px; font-size:24px; text-align: center}
+        .lines{ display:flex; justify-content: space-between; padding: 10px 5px }
+    </style>
+</head>
+
+<body>
+    <div id='app'>
+        <span class='title'>会员卡消费</span>
+        <div>
+            会员卡号：{{param.cardnumber}}
+        </div>
+        <div>
+            会员姓名：{{param.realname}}
+        </div>
+        <div>
+            消费金额：{{param.rechargeamount}}
+        </div>
+        <div>
+            余额：{{param.balance}}
+        </div>
+        <div style="border-top: 1px solid #000; padding-top:2px; text-align: center">
+            日期: {{param.rechargedate}}
+        </div>
+    </div>
+</body>
+<script>
+    const { ipcRenderer } = require('electron')
+    new Vue({
+        el: "#app",
+        data: {
+            param: {}
+        },
+        mounted() {
+            ipcRenderer.on('ping', (e, param) => { //接收响应
+                this.param = param;
+                ipcRenderer.sendToHost('pong') 
+            })
+        },
+        methods: {}
+    })
+</script>
+
+</html>

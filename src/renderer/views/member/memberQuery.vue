@@ -1,10 +1,10 @@
 <template>
   <div class="cardlist">
     <div ref="critheader" class="critheader">
-      <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal" @select="handleSelect">
+      <!-- <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal" @select="handleSelect">
         <el-menu-item index="1">会员列表</el-menu-item>
         <el-menu-item index="2">会员查询</el-menu-item>
-      </el-menu>
+      </el-menu> -->
       <div style="display: flex; margin: 10px">
         <div style="flex: 0 0 auto; margin-left:5px; display: flex;">
           <span style="font-size:14px; flex: 0 0 auto; margin:auto;padding:0 5px" >会员卡号:</span>
@@ -57,7 +57,7 @@
           <template slot-scope="scope">
             <div v-if="scope.row.payWay === '2'">微信支付</div>
             <div v-else-if="scope.row.payWay == '1'">现金支付</div>
-            <div v-else-if="scope.row.payWay == '3'">会员卡支付</div>
+            <div v-else-if="scope.row.payWay == '4'">会员卡支付</div>
           </template>
         </el-table-column>
       </el-table>
@@ -73,7 +73,7 @@ export default {
   name: 'PersonArpproveList',
   data () {
     return {
-      activeIndex: '2',
+      // activeIndex: '2',
       myHeight: '',
       loading: false,
       contentVisible: false,
@@ -102,11 +102,11 @@ export default {
   mounted () {
     const h = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight // 浏览器高度
     const critheaderheight = this.$refs.critheader.offsetHeight
-    this.myHeight = (h - critheaderheight - 100) + 'px'
+    this.myHeight = (h - critheaderheight - 120) + 'px'
     var that = this
     window.onresize = function windowResize () {
       const h = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight // 浏览器高度
-      that.myHeight = (h - critheaderheight - 100) + 'px'
+      that.myHeight = (h - critheaderheight - 120) + 'px'
     }
   },
   created: function () {

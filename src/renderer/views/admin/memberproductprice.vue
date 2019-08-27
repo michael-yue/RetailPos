@@ -1,12 +1,12 @@
 <template>
   <div class="cardlist">
     <div ref="critheader" style="padding:10px 20px">
-      <el-menu ref="adminmenu" :default-active="activeIndex" class="el-menu-demo" mode="horizontal" @select="handleSelect">
+      <!-- <el-menu ref="adminmenu" :default-active="activeIndex" class="el-menu-demo" mode="horizontal" @select="handleSelect">
         <el-menu-item index="1">设置打印机</el-menu-item>
         <el-menu-item index="2">会员类型</el-menu-item>
         <el-menu-item index="3">产品设置</el-menu-item>
         <el-menu-item index="4">会员价格</el-menu-item>
-      </el-menu>
+      </el-menu> -->
     </div>
     <div :style="{height: myHeight}" style="padding:0 20px 10px 20px;">
       <el-table
@@ -111,11 +111,11 @@ export default {
   mounted () {
     const h = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight // 浏览器高度
     const critheaderheight = this.$refs.critheader.offsetHeight
-    this.myHeight = (h - critheaderheight - 100) + 'px'
+    this.myHeight = (h - critheaderheight - 110) + 'px'
     var that = this
     window.onresize = function windowResize () {
       const h = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight // 浏览器高度
-      that.myHeight = (h - critheaderheight - 100) + 'px'
+      that.myHeight = (h - critheaderheight - 110) + 'px'
     }
   },
   created: function () {
@@ -174,17 +174,6 @@ export default {
             })
         }
       })
-    },
-    handleSelect (key, keyPath) {
-      if (key === '1') {
-        this.$router.push('/system/setting')
-      } else if (key === '2') {
-        this.$router.push('/system/usertype')
-      } else if (key === '3') {
-        this.$router.push('/system/product')
-      } else if (key === '4') {
-        this.$router.push('/system/memberproductprice')
-      }
     }
   }
 }

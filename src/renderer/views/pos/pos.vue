@@ -59,7 +59,7 @@
           <li @click="showCash">现金收款</li>
           <li @click="showWx">微信收款</li>
           <li class="disable">支付宝</li>
-          <li class="disable">会员卡</li>
+          <li @click="showCardDialog">会员卡</li>
           <!-- <li @>混合支付</li> -->
         </ul>
       </el-card>
@@ -161,24 +161,24 @@
       <div style="font-size:18px">
         <div style="display: flex; flex-direction:column">
           <div style="display: flex">
-            <div style="margin: auto; min-width: 60px">会员卡号: </div>
-            <div style="margin: auto; min-width: 60px">{{this.member.cardnumber}}</div>
+            <div style="margin: auto; min-width: 60px; flex: 50%; padding:3px">会员卡号: </div>
+            <div style="margin: auto; min-width: 60px; flex: 50%; padding:3px">{{this.member.cardnumber}}</div>
           </div>
           <div style="display: flex">
-            <div style="margin: auto; min-width: 60px">会员名称: </div>
-            <div style="margin: auto; min-width: 60px">{{this.member.realname}}</div>
+            <div style="margin: auto; min-width: 60px; flex: 50%; padding:3px">会员名称: </div>
+            <div style="margin: auto; min-width: 60px; flex: 50%; padding:3px">{{this.member.realname}}</div>
           </div>
           <div style="display: flex">
-            <div style="margin: auto; min-width: 60px">卡余额: </div>
-            <div style="margin: auto; min-width: 60px">{{this.member.balance}}</div>
+            <div style="margin: auto; min-width: 60px; flex: 50%; padding:3px">卡余额: </div>
+            <div style="margin: auto; min-width: 60px; flex: 50%; padding:3px">{{this.member.balance}}</div>
           </div>
           <div style="display: flex">
-            <div style="margin: auto; min-width: 60px">本次支付: </div>
-            <div style="margin: auto; min-width: 60px">{{this.shouldpayamount}}</div>
+            <div style="margin: auto; min-width: 60px; flex: 50%; padding:3px">本次支付: </div>
+            <div style="margin: auto; min-width: 60px; flex: 50%; padding:3px">{{this.shouldpayamount}}</div>
           </div>
           <div style="display: flex">
-            <div style="margin: auto; min-width: 60px">余额: </div>
-            <div style="margin: auto; min-width: 60px">{{this.member.balance - this.shouldpayamount}}</div>
+            <div style="margin: auto; min-width: 60px; flex: auto; padding:3px">余额: </div>
+            <div style="margin: auto; min-width: 60px; flex: auto; padding:3px">{{this.member.balance - this.shouldpayamount}}</div>
           </div>
         </div>
         <div style="color:red">
@@ -247,9 +247,10 @@
         <el-button type="primary" @click="confirmMemberSelect">确定选择</el-button>
       </span>
     </el-dialog>
-    <div style="z-index: -1000; position:absolute;">
-      <webview ref="frontView" src="../../../static/print.html" nodeintegration></webview>
+    <div style="z-index: -1000; position:absolute; top: 9000px">
+      <webview ref="frontView" src="../../../static/printFront.html" nodeintegration></webview>
       <webview ref="backView" src="../../../static/print.html" nodeintegration></webview>
+      <webview ref="memberPayView" src="../../../static/printCustomerPay.html" nodeintegration></webview>
     </div>
   </div>
 </template>
@@ -262,6 +263,7 @@ import { listAllUser, queryPerson, listAllMemberType } from '@/api/person.js'
 import { getSystemParam } from '@/api/system.js'
 import { parseTime } from '@/utils'
 import { ipcRenderer } from 'electron'
+import { Message } from 'element-ui'
 export default {
   name: 'Pos',
   data () {
@@ -354,6 +356,7 @@ export default {
         if (this.sysParam.printBack) {
           this.setPrinter(this.$refs.backView, this.sysParam.backPrinter)
         }
+        this.setPrinter(this.$refs.memberPayView, this.sysParam.frontPrinter)
       })
     },
     getMemberTypes: function () {
@@ -404,6 +407,7 @@ export default {
     confirmMemberSelect() {
       console.log(this.currentMemberListRow)
       this.inputCardnumber = this.currentMemberListRow.cardnumber
+      this.inputCustomerName = this.currentMemberListRow.realname
       this.dialogMemberSearchVisible = false
     },
     memberTypeChanged: function (item) {
@@ -417,9 +421,6 @@ export default {
     },
     orderlineSelected: function (item) {
       this.activeOrderline = item
-    },
-    showCardDialog: function () {
-      this.dialogCardInputVisible = true
     },
     closeWxDialog: function () {
       this.dialogWxVisible = false
@@ -449,8 +450,6 @@ export default {
         this.dialogCardInputVisible = false
       } else {
         this.getCardInfo()
-        // this.cardnumber = this.inputCardnumber
-        // this.customerName = this.inputCustomerName
         this.dialogCardInputVisible = false
         this.inputCardnumber = ''
         this.inputCustomerName = ''
@@ -568,17 +567,31 @@ export default {
       }
       this.dialogAliVisible = true
     },
-    // showCard: function () {
-    //   console.log('this.member')
-    //   console.log(this.member)
-    //   if (this.shouldpayamount === 0) {
-    //     return
-    //   }
-    //   if (this.member === null) {
-    //     console.log('null')
-    //   }
-    //   this.dialogCardVisible = true
-    // },
+    showCardDialog: function () {
+      if (this.shouldpayamount === 0) {
+        return
+      }
+      if (this.member === null) {
+        return
+      }
+      if(JSON.stringify(this.member) === '{}') {
+        Message({
+          message: '请先选择会员',
+          type: 'error',
+          duration: 5 * 1000
+        })
+        return
+      }
+      if (this.member.balance < this.shouldpayamount) {
+        Message({
+          message: '会员余额不足',
+          type: 'error',
+          duration: 5 * 1000
+        })
+        return
+      }
+      this.dialogCardVisible = true
+    },
     recalcuateOrder: function () {
       var amount = 0
       if (this.orderedlist.length > 0) {
@@ -602,7 +615,6 @@ export default {
       if (this.payedamount < this.shouldpayamount) {
         return
       }
-      console.log(this.member)
       var param = {
         shopid: store.getters.branches,
         orderline: this.orderedlist,
@@ -711,24 +723,30 @@ export default {
       })
     },
     recieveCard: function () {
-      var param = {
-        shopid: store.getters.branches,
-        orderline: this.orderedlist,
-        shouldpayamount: this.shouldpayamount,
-        payedamount: this.payedamount,
-        changeamount: this.changeamount,
-        payway: 4,
-        qrcode: '',
-        cardnumber: this.member.cardNumber
-      }
       saveOrder(store.getters.branches, JSON.stringify(this.orderedlist), this.shouldpayamount, 
-        this.payedamount, this.changeamount, 4, '', this.membercardnumber).then(res => {
-        this.dialogAliVisible = false
-        this.clearOrdered()
+        this.shouldpayamount, this.changeamount, 4, '', this.member.cardnumber).then(res => {
+          var param = res.data
+          console.log(param)
+          var arr = {
+            seq: res.data.seq,
+            orderdate: res.data.orderdate,
+            orderline: this.orderedlist,
+            shouldpayamount: this.shouldpayamount,
+            payedamount: this.payedamount,
+            changeamount: this.changeamount,
+            payway: '会员卡支付',
+            qrcode: this.qrcode,
+            cardnumber: this.member.cardNumber,
+            balance: res.data.balance
+          }
+          this.print(arr)
+
+          // this.printMember(param)
+          this.dialogCardVisible = false
+          this.clearOrdered()
       })
     },
     setPrinter (webview, printer) {
-      // const webview = document.querySelector('webview')
       webview.addEventListener('dom-ready', () => {
         console.log('dom-ready')
         // webview.openDevTools() // 这个方法可以打开print.html的控制台
@@ -737,10 +755,9 @@ export default {
         if (event.channel === 'pong') {
           webview.print(
             {
-              // 是否是静默打印,true为静默打印，false会弹出打印设置框
               silent: true,
               printBackground: false,
-              deviceName: printer  // 'Microsoft XPS Document Writer' 
+              deviceName: printer
             },
             data => {
               console.log('webview success', data)
@@ -749,12 +766,6 @@ export default {
         }
       })
     },
-    // getPrinterList () {
-    //   ipcRenderer.send('getPrinterList')
-    //   ipcRenderer.once('getPrinterList', (event, data) => {
-    //     console.log(data)
-    //   })
-    // },
     print (arr) {
       // const webview = this.$refs.frontView
       // webview.send('ping', arr) // 向webview嵌套的页面响应事件
