@@ -8,7 +8,8 @@ const user = {
     name: '',
     avatar: '',
     roles: [],
-    branches: []
+    branches: [],
+    shopId: 0,
   },
 
   mutations: {
@@ -26,6 +27,9 @@ const user = {
     },
     SET_BRANCHES: (state, branches) => {
       state.branches = branches
+    },
+    SET_SHOPID: (state, shopId) => {
+      state.shopId = shopId
     }
   },
 
@@ -63,6 +67,7 @@ const user = {
             commit('SET_NAME', data.name)
             commit('SET_AVATAR', data.avatar)
             commit('SET_BRANCHES', data.branch)
+            commit('SET_SHOPID', data.shopId)
             resolve(response)
           }).catch(error => {
             reject(error)
@@ -78,6 +83,7 @@ const user = {
           commit('SET_TOKEN', '')
           commit('SET_ROLES', [])
           commit('SET_BRANCHES', [])
+          commit('SET_SHOPID', 0)
           removeToken()
           resolve()
         }).catch(error => {

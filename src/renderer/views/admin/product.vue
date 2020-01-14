@@ -1,12 +1,6 @@
 <template>
   <div class="product">
     <div ref="critheader" style="padding:10px 20px">
-      <!-- <el-menu ref="adminmenu" :default-active="activeIndex" class="el-menu-demo" mode="horizontal" @select="handleSelect">
-        <el-menu-item index="1">设置打印机</el-menu-item>
-        <el-menu-item index="2">会员类型</el-menu-item>
-        <el-menu-item index="3">产品设置</el-menu-item>
-        <el-menu-item index="4">会员价格</el-menu-item>
-      </el-menu>     -->
       <el-card style="display:none">
         <!-- <SelectBranch typeclass="mt" @BranchChanged="branchChangeEvent" /> -->
       </el-card>
@@ -155,7 +149,12 @@ export default {
           id: 0
         },
         id: 0,
-        status: 0
+        status: 0,
+        productId: '',
+        productName: '',
+        productDesc: '',
+        price: 0,
+        orderSeq: 0
       },
       editProductTypeForm: {
         id: 0,
@@ -192,6 +191,7 @@ export default {
     if (store.getters.roles.includes('branch')) {
       this.selectedBranch = store.getters.branches
       this.roleBranch = true
+      this.shopId = store.getters.shopId
     }
   },
   computed: {
@@ -203,6 +203,7 @@ export default {
   },
   watch: {
     selectedBranch (val, oldval) {
+      // this.shopId = val
       if (val !== 0) {
         this.retrieveData()
       }
@@ -260,7 +261,7 @@ export default {
       this.editProductForm.orderSeq = product.orderSeq
       this.editProductForm.status = product.status
       this.editProductForm.productType = product.productType
-      console.log(this.editProductForm)
+      console.log(this.shopId)
       this.dialogProductStatus = 'update'
       this.dialogProductVisible = true
     },
@@ -274,14 +275,6 @@ export default {
       this.dialogProductVisible = false
     },
     createProductType: function () {
-      // var param = {
-      //   shopid: store.getters.branches,
-      //   typeid: this.editProductTypeForm.typeId,
-      //   typename: this.editProductTypeForm.typeName,
-      //   orderseq: this.editProductTypeForm.orderSeq,
-      //   status: this.editProductTypeForm.status
-      // }
-      // shopid, typeid, typename, orderseq, status
       createProductType(store.getters.branches, this.editProductTypeForm.typeId,
         this.editProductTypeForm.typeName, this.editProductTypeForm.orderSeq,
         this.editProductTypeForm.status).then(res => {
@@ -317,44 +310,25 @@ export default {
     createProduct: function () {
       this.loading = true
       var that = this
-      // var param = {
-      //   shopid: store.getters.branches,
-      //   productId: this.editProductForm.productId,
-      //   productName: this.editProductForm.productName,
-      //   orderSeq: this.editProductForm.orderSeq,
-      //   status: this.editProductForm.status,
-      //   price: this.editProductForm.price,
-      //   productTypeId: this.editProductTypeId
-      // }
-      createProduct(store.getters.branches, this.editProductForm.productId, this.editProductForm.productName, 
-        this.editProductForm.orderSeq, this.editProductForm.price, this.editProductTypeId,
-        this.editProductForm.status).then(res => {
-        if (res.code === 20000) {
-          this.retrieveData()
-          this.dialogProductVisible = false
-          // that.products = res.data
-          // that.filteredProducts = that.products.filter(function (item) {
-          //   return item.category_name === that.activeProductType.name
-          // })
+       this.$refs.editProductForm.validate(valid => {
+        if (valid) {
+          createProduct(store.getters.branches, this.editProductForm.productId, this.editProductForm.productName, 
+            this.editProductForm.orderSeq, this.editProductForm.price, this.editProductTypeId,
+            this.editProductForm.status).then(res => {
+            if (res.code === 20000) {
+              this.retrieveData()
+              this.dialogProductVisible = false
+            }
+            that.loading = false
+          }).catch(error => {
+            console.log(error)
+          })
         }
-        that.loading = false
-      }).catch(error => {
-        console.log(error)
       })
     },
     updateProduct: function () {
       this.loading = true
       var that = this
-      // var param = {
-      //   id: this.editProductForm.id,
-      //   shopid: store.getters.branches,
-      //   productId: this.editProductForm.productId,
-      //   productName: this.editProductForm.productName,
-      //   orderSeq: this.editProductForm.orderSeq,
-      //   price: this.editProductForm.price,
-      //   productTypeId: this.editProductTypeId,
-      //   status: this.editProductForm.status
-      // }
       updateProduct(this.editProductForm.id, store.getters.branches, this.editProductForm.productId,
         this.editProductForm.productName, this.editProductForm.orderSeq, this.editProductForm.price,
         this.editProductTypeId, this.editProductForm.status).then(res => {

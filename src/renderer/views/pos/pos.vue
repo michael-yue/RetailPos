@@ -339,7 +339,6 @@ export default {
       const h = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight // 浏览器高度
       that.myHeight = (h - critheaderheight - 50) + 'px'
     }
-    // this.getPrinterList()
     this.getSystemParam()
   },
   created () {
@@ -351,12 +350,12 @@ export default {
       getSystemParam(store.getters.branches).then(res => {
         this.sysParam = res.data
         if (this.sysParam.printFront) {
-          this.setPrinter(this.$refs.frontView, this.sysParam.frontPrinter)
+          this.setPrinter(this.$refs.frontView, this.sysParam.frontPrinter, 2)
         }
         if (this.sysParam.printBack) {
-          this.setPrinter(this.$refs.backView, this.sysParam.backPrinter)
+          this.setPrinter(this.$refs.backView, this.sysParam.backPrinter, 1)
         }
-        this.setPrinter(this.$refs.memberPayView, this.sysParam.frontPrinter)
+        this.setPrinter(this.$refs.memberPayView, this.sysParam.frontPrinter, 1)
       })
     },
     getMemberTypes: function () {
@@ -383,7 +382,6 @@ export default {
     queryMembers: function() {
       this.memberlist = []
       this.loadingMemberList = true
-      console.log(this.selectMemberType)
       listAllUser(this.selectMemberType, this.searchForm.cardnumber, this.searchForm.name, this.searchForm.mobile, this.currentPage, this.limit).then(response => {
         this.memberlist = response.data
         this.total = response.totalnum
@@ -405,7 +403,6 @@ export default {
       this.currentMemberListRow = val;
     },
     confirmMemberSelect() {
-      console.log(this.currentMemberListRow)
       this.inputCardnumber = this.currentMemberListRow.cardnumber
       this.inputCustomerName = this.currentMemberListRow.realname
       this.dialogMemberSearchVisible = false
@@ -746,23 +743,35 @@ export default {
           this.clearOrdered()
       })
     },
-    setPrinter (webview, printer) {
+    setPrinter (webview, printer, printcount) {
+
       webview.addEventListener('dom-ready', () => {
         console.log('dom-ready')
         // webview.openDevTools() // 这个方法可以打开print.html的控制台
       })
       webview.addEventListener('ipc-message', event => {
         if (event.channel === 'pong') {
-          webview.print(
-            {
-              silent: true,
-              printBackground: false,
-              deviceName: printer
-            },
-            data => {
-              console.log('webview success', data)
-            }
-          )
+            webview.print(
+              {
+                silent: true,
+                printBackground: false,
+                deviceName: printer
+              },
+              data => {
+                if (printcount == 2) {
+                  webview.print(
+                  {
+                    silent: true,
+                    printBackground: false,
+                    deviceName: printer
+                  },  
+                  data => {
+                    console.log('webview success', data)    
+                  })
+                }
+                // console.log('webview success', data)
+              }
+            )
         }
       })
     },
@@ -772,10 +781,12 @@ export default {
       if (this.sysParam.printFront) {
         const webview = this.$refs.frontView
         webview.send('ping', arr) // 向webview嵌套的页面响应事件
+       // webview.send('ping', arr) // 向webview嵌套的页面响应事件
       }
       if (this.sysParam.printBack) {
         const webview = this.$refs.backView
         webview.send('ping', arr) // 向webview嵌套的页面响应事件
+        //  webview.send('ping', arr) // 向webview嵌套的页面响应事件
       }
     }
   }

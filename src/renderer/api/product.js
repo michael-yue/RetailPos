@@ -78,7 +78,7 @@ export function createProductType (shopid, typeid, typename, orderseq, status) {
   return request({
     url: '/eldlyrest/createProductType?t=' + Date.now(),
     method: 'get',
-    param: {
+    params: {
       shopid, typeid, typename, orderseq, status
     }
   })
